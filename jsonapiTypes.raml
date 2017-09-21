@@ -1,0 +1,202 @@
+# JSON API Schema
+# This is a schema for responses in the JSON API format. For more, see http://jsonapi.org
+types:
+  success:
+    type: object
+    additionalProperties: false
+    properties:
+      data:
+        required: true
+        type: data
+      included:
+        required: false
+        description: To reduce the number of HTTP requests, servers **MAY** allow responses that include related resources along with the requested primary resources. Such responses are called "compound documents".
+        type: array
+        items: resource
+        uniqueItems: True
+      meta:
+        required: false
+        type: meta
+      links:
+        required: false
+        description: Link members related to the primary data.
+        type: pagelinks # hadd to add this manuall due to allOf
+      jsonapi:
+        required: false
+        type: jsonapi
+  failure:
+    type: object
+    additionalProperties: false
+    properties:
+      errors:
+        required: true
+        type: array
+        items: error
+        uniqueItems: True
+      meta:
+        required: false
+        type: meta
+      jsonapi:
+        required: false
+        type: jsonapi
+      links:
+        required: false
+        type: links
+  info:
+    type: object
+    additionalProperties: false
+    properties:
+      meta:
+        required: true
+        type: meta
+      links:
+        required: false
+        type: links
+      jsonapi:
+        required: false
+        type: jsonapi
+  meta:
+    type: object
+    additionalProperties: true
+  data:
+    type: object | object[] | nil
+    description: The document's \"primary data\" is a representation of the resource or collection of resources targeted by a request.
+  resource:
+    type: object
+    additionalProperties: false
+    properties:
+      type:
+        required: true
+        type: string
+      id:
+        required: true
+        type: string
+      attributes:
+        required: false
+        type: attributes
+      relationships:
+        required: false
+        type: relationships
+      links:
+        required: false
+        type: links
+      meta:
+        required: false
+        type: meta
+  relationshipLinks:
+    type: object
+    additionalProperties: true
+    properties:
+      self:
+        required: false
+        description: A `self` member, whose value is a URL for the relationship itself (a "relationship URL"). This URL allows the client to directly manipulate the relationship. For example, it would allow a client to remove an `author` from an `article` without deleting the people resource itself.
+        type: link
+      related:
+        required: false
+        type: link
+  links:
+    type: object
+    additionalProperties: true
+  link:
+    type: string | linkobject
+    additionalProperties: false
+  linkobject:
+    type: object
+    properties:
+      href:
+        type: uristring
+        description: A string containing the link's URL.
+      meta:
+        type: meta
+  relationships:
+    type: object
+    additionalProperties: false
+  relationshipToOne:
+  relationshipToMany:
+    type: array
+  empty:
+    type: nil
+  linkage:
+    type: object
+    additionalProperties: false
+    properties:
+      type:
+        required: true
+        type: string
+      id:
+        required: true
+        type: string
+      meta:
+        required: false
+        type: meta
+  pagination:
+    type: object
+    properties:
+      first:
+        required: false
+        description: The first page of data
+        type: uristring | nil # oneOf
+      last:
+        required: false
+        description: The last page of data
+        type: uristring | nil # oneOf
+      prev:
+        required: false
+        description: The previous page of data
+        type: uristring | nil # oneOf
+      next:
+        required: false
+        description: The next page of data
+        type: uristring | nil # oneOf
+  uristring:
+    type: string # TODO uri-reference format
+  jsonapi:
+    type: object
+    additionalProperties: false
+    properties:
+      version:
+        required: false
+        type: string
+      meta:
+        required: false
+        type: meta
+  error:
+    type: object
+    additionalProperties: false
+    properties:
+      id:
+        required: false
+        description: A unique identifier for this particular occurrence of the problem.
+        type: string
+      links:
+        required: false
+        type: links
+      status:
+        required: false
+        description: The HTTP status code applicable to this problem, expressed as a string value.
+        type: string
+      code:
+        required: false
+        description: An application-specific error code, expressed as a string value.
+        type: string
+      title:
+        required: false
+        description: A short, human-readable summary of the problem. It **SHOULD NOT** change from occurrence to occurrence of the problem, except for purposes of localization.
+        type: string
+      detail:
+        required: false
+        description: A human-readable explanation specific to this occurrence of the problem.
+        type: string
+      source:
+        required: false
+        type: object
+        properties:
+          pointer:
+            description: A JSON Pointer [RFC6901] to the associated entity in the request document [e.g. "/data" for a primary data object, or "/data/attributes/title" for a specific attribute].
+            type: string
+          parameter:
+            description: A string indicating which query parameter caused the error.
+            type: string
+      meta:
+        required: false
+        type: meta
