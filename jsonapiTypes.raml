@@ -20,7 +20,7 @@ types:
       links:
         required: false
         description: Link members related to the primary data.
-        type: pagelinks # hadd to add this manuall due to allOf
+        type: pagelinks # had to add this manually due to no RAML allOf
       jsonapi:
         required: false
         type: jsonapi
@@ -59,7 +59,7 @@ types:
     type: object
     additionalProperties: true
   data:
-    type: object | object[] | nil
+    type: resource | resource[] | nil
     description: The document's \"primary data\" is a representation of the resource or collection of resources targeted by a request.
   resource:
     type: object
@@ -97,6 +97,12 @@ types:
   links:
     type: object
     additionalProperties: true
+  pagelinks:
+    type: pagination
+    properties:
+      self:
+        type: link
+    additionalProperties: false
   link:
     type: string | linkobject
     additionalProperties: false
@@ -112,8 +118,13 @@ types:
     type: object
     additionalProperties: false
   relationshipToOne:
+    type: empty | linkage
+    description: References to other resource objects in a to-one (\"relationship\"). Relationships can be specified by including a member in a resource's links object.
   relationshipToMany:
     type: array
+    description: An array of objects each containing \"type\" and \"id\" members for to-many relationships.
+    items: linkage
+    uniqueItems: true
   empty:
     type: nil
   linkage:
