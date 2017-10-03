@@ -1,0 +1,37 @@
+#%RAML 1.0 Library
+usage: Schema for a Location
+uses:
+  api: jsonApiLibrary.raml
+types:
+  Location:
+    type: api.resource
+    description: a warehouse location
+    properties:
+      attributes:
+        type: api.attributes
+        properties:
+          warehouse:
+            required: true
+            type: string
+            description: warehouse identifier
+          aisle:
+            required: true
+            type: string
+            description: aisle in warehouse
+          shelf:
+            required: true
+            type: string
+            description: shelf in aisle
+          bin:
+            required: true
+            type: string
+            description: bin on shelf
+    additionalProperties: false
+    example:
+        type: Location
+        id: "14"
+        attributes:
+          warehouse: NYC
+          aisle: "3"
+          shelf: "4"
+          bin: "22"

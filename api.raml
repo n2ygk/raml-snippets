@@ -1,0 +1,92 @@
+#%RAML 1.0
+title: demo-jsonapi
+description: a sample RESTful API that conforms to jsonapi.org 1.0
+version: v1
+#baseUri: https://columbia-demo-jsonapi.cloudhub.io/{version}/api
+baseUri: https://mocksvc.mulesoft.com/mocks/92689760-c829-434a-b974-2f5943faf7bb
+documentation: 
+  - title: About {json:api} 1.0
+    content: 
+      This is an example of a [jsonapi 1.0](http://jsonapi.org/format) RESTful API
+      which uses mediatype (application/vnd.api+json) in requests and responses.
+  - title: The jsonApiLibrary (api.*) types
+    content: 
+      The types defined in library `jsonApiLibrary.raml` are derived directly from the jsonsapi 1.0 
+      [specification](https://github.com/json-api/json-api/blob/gh-pages/schema)
+      which is defined using the [json-schema.org](http://json-schema.org/documentation.html) specification.
+      They were translated from JSON to YAML and then manually edited in the one or two cases where a json:api
+      capability is not directly available in RAML (for instance, _patternProperties_). 
+      
+      When referencing those types
+      in your API, you must prefix them with the library name you've given in the `uses` statement. In this example, that 
+      is `api`. For reasons I don't quite understand, you must use this with the same uses key name
+      (api) in this main api.raml and any other libraries that reference types defined in jsonApiLibrary.raml such
+      as the WidgetType and LocationType definitions.
+  - title: The Locations and Widgets types
+    content: 
+      The Locations and Widget types are the types managed by this sample API. They are all subclasses of the
+      api.resource type and also subclass api.attributes from the jsonApiLibrary.raml library. 
+uses: 
+  api: libraries/jsonApiLibrary.raml
+  loc: libraries/LocationType.raml
+  wid: libraries/WidgetType.raml
+  col: libraries/jsonApiCollections.raml
+  cu: libraries/columbiaLibrary.raml
+
+# the API's resources:
+/widgets:
+  displayName: widgets
+  description: stuff we have in inventory
+  type: 
+    col.collection: 
+      dataType: wid.Widget
+      exampleCollection: !include examples/WidgetCollectionExample.raml
+      exampleItem: !include examples/WidgetItemExample.raml
+  get:
+    is: 
+      - cu.oauth_read_any
+  post:
+    is: 
+      - cu.oauth_create_any
+  /{id}:
+    type: 
+     col.item:
+        dataType: wid.Widget
+        exampleItem: !include examples/WidgetItemExample.raml
+    get:
+      is: 
+        - cu.oauth_read_any
+    patch:
+      is: 
+        - cu.oauth_update_any
+    delete:
+      is: 
+        - cu.oauth_delete_any
+/locations:
+  displayName: locations
+  description: inventory locations
+  type: 
+    col.collection: 
+      dataType: loc.Location
+      exampleCollection: !include examples/LocationCollectionExample.raml
+      exampleItem: !include examples/LocationItemExample.raml
+  get:
+    is: 
+      - cu.oauth_read_any
+  post:
+    is: 
+      - cu.oauth_create_any
+  /{id}:
+    type: 
+     col.item:
+        dataType: loc.Location
+        exampleItem: !include examples/LocationItemExample.raml
+    get:
+      is: 
+        - cu.oauth_read_any
+    patch:
+      is: 
+        - cu.oauth_update_any
+    delete:
+      is: 
+        - cu.oauth_delete_any

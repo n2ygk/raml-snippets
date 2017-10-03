@@ -1,0 +1,48 @@
+#%RAML 1.0 Library
+usage: Schema for a Widget
+uses:
+  api: jsonApiLibrary.raml
+  loc: LocationType.raml
+types:
+  Widget:
+    type: api.resource
+    description: a widget
+    properties:
+      attributes:
+        type: api.attributes
+        properties:
+          name:
+            required: true
+            type: string
+            description: catalog name
+          qty:
+            required: false
+            type: integer
+            minimum: 0
+            description: quantity
+          locations:
+            required: false
+            type: loc.Location[]
+            description: location(s) of item(s)
+    additionalProperties: false
+    example:
+      type: Widget
+      id: abc-123
+      attributes:
+        name: can opener
+        qty: 42
+        locations: 
+          - type: Location
+            id: "14"
+            attributes:
+              warehouse: NYC
+              aisle: "3"
+              shelf: "4"
+              bin: "22"        
+          - type: Location
+            id: "15"
+            attributes:
+              warehouse: NYC
+              aisle: "3"
+              shelf: "4"
+              bin: "23"

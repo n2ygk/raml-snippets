@@ -1,0 +1,198 @@
+#%RAML 1.0 Library
+usage: |
+  RAML library for Columbia University APIs. Including:
+  - securitySchemes: 
+    oauth_2_0: Columbia's production OAuth 2.0 service.
+    oauth_2_0_test: Columbia's test OAuth 2.0 service.
+  - traits (defined only for the production OAuth 2.0 service):
+    oauth_read_columbia: Authorization Code w/scopes: auth-columbia, read.
+    oauth_read_any: Authorization Code w/scopes `read` and one of
+      auth-{columbia,facebook,google,linkedin,twitter,windowslive}
+      or Client Credentials scope auth-none.
+    oauth_create_{columbia,any}: as above with create scope
+    oauth_update_{columbia,any}: as above with update scope
+    oauth_delete_{columbia,any}: as above with delete scope
+  Example usage:
+  ```
+  uses:
+    cu: libraries/columbiaLibrary.raml
+  ...
+  /widgets:
+    ...
+    get:
+      is: [ oauth_read_any ]
+  ```
+  
+  Copyright (c) 2017 The Trustees of Columbia University in the City of New York
+uses:
+  oa2: oAuth2Types.raml
+
+securitySchemes:
+  oauth_2_0:
+    type: OAuth 2.0
+    description: |
+      This API supports OAuth 2.0 for authenticating all API requests.
+    describedBy:
+      headers:
+        Authorization?:
+          description: |
+            Used to send a valid OAuth 2 access token. Do not use with the "access_token" query string parameter.
+          type: string
+      queryParameters:
+        access_token?:
+          description: |
+            Used to send a valid OAuth 2 access token. Do not use together with the "Authorization" header
+          type: string
+      responses:
+        200:
+          description: |
+            Access Token successfully issued.
+          body:
+            application/json:
+              type: oa2.success
+        401:
+          description: |
+                Bad or expired token. This can happen if the user or the API revoked or expired an access token. To fix, you should re-authenticate the user.
+          body: 
+            application/json:
+              type: oa2.error
+        403:
+          description: |
+                Bad OAuth request (wrong consumer key, bad nonce, expired timestamp...). Unfortunately,
+                re-authenticating the user won't help here.
+          body: 
+            application/json:
+              type: oa2.error
+    settings:
+      authorizationUri: https://oauth.cc.columbia.edu/as/authorization.oauth2
+      accessTokenUri: https://oauth.cc.columbia.edu/as/token.oauth2
+      # override the list of authorizationGrants and scopes in your API.
+      authorizationGrants: 
+        - client_credentials
+        - authorization_code
+      scopes: 
+        - openid
+        - auth-columbia
+        - auth-facebook
+        - auth-google
+        - auth-linkedin
+        - auth-twitter
+        - auth-windowslive
+        - auth-none
+        - create
+        - read
+        - update
+        - delete
+        - demo-netphone-admin
+traits:
+  protected:
+    description: common snippet for protected resource errors
+    responses: 
+      401:
+        description: Unauthorized
+        body: 
+          application/json:
+            type: oa2.error
+      403:
+        description: Forbidden
+        body: 
+          application/json:
+            type: oa2.error
+      429:  
+        description: rate-limiting policy SLA has been exceeded.
+        body:
+          application/text:
+            type: string
+            example: API calls exceeded
+  oauth_read_columbia:
+    securedBy:
+      - oauth_2_0:
+          authorizationGrants: [ authorization_code ]
+          scopes:
+            - read
+            - auth-columbia
+    is: [ protected ]
+  oauth_read_any:
+    securedBy:
+      - oauth_2_0:
+          authorizationGrants: [ authorization_code ]
+          scopes:
+            - read
+            - auth-columbia
+      - oauth_2_0:
+          authorizationGrants: [ authorization_code ]
+          scopes:
+            - read
+            - auth-facebook
+      - oauth_2_0:
+          authorizationGrants: [ authorization_code ]
+          scopes:
+            - read
+            - auth-google
+      - oauth_2_0:
+          authorizationGrants: [ client_credentials ]
+          scopes:
+            - read
+            - auth-none
+    is: [ protected ]
+  oauth_create_columbia:
+    securedBy: 
+      - oauth_2_0:
+          authorizationGrants: [ authorization_code ]
+          scopes: [auth-columbia, create]
+  oauth_create_any:
+    securedBy: 
+      - oauth_2_0:
+          authorizationGrants: [ authorization_code ]
+          scopes: [auth-columbia, create]
+      - oauth_2_0:
+          authorizationGrants: [ authorization_code ]
+          scopes: [auth-facebook, create]
+      - oauth_2_0:
+          authorizationGrants: [ authorization_code ]
+          scopes: [auth-google, create]
+      - oauth_2_0:
+          authorizationGrants: [ client_credentials ]
+          scopes: [auth-none, create]
+    is: [ protected ]
+  oauth_update_columbia:
+    securedBy: 
+      - oauth_2_0:
+          authorizationGrants: [ authorization_code ]
+          scopes: [auth-columbia, update]
+  oauth_update_any:
+    securedBy: 
+      - oauth_2_0:
+          authorizationGrants: [ authorization_code ]
+          scopes: [auth-columbia, update]
+      - oauth_2_0:
+          authorizationGrants: [ authorization_code ]
+          scopes: [auth-facebook, update]
+      - oauth_2_0:
+          authorizationGrants: [ authorization_code ]
+          scopes: [auth-google, update]
+      - oauth_2_0:
+          authorizationGrants: [ client_credentials ]
+          scopes: [auth-none, update]
+    is: [ protected ]
+  oauth_delete_columbia:
+    securedBy: 
+      - oauth_2_0:
+          authorizationGrants: [ authorization_code ]
+          scopes: [auth-columbia, delete]
+    is: [ protected ]
+  oauth_delete_any:
+    securedBy: 
+      - oauth_2_0:
+          authorizationGrants: [ authorization_code ]
+          scopes: [auth-columbia, delete]
+      - oauth_2_0:
+          authorizationGrants: [ authorization_code ]
+          scopes: [auth-facebook, delete]
+      - oauth_2_0:
+          authorizationGrants: [ authorization_code ]
+          scopes: [auth-google, delete]
+      - oauth_2_0:
+          authorizationGrants: [ client_credentials ]
+          scopes: [auth-none, delete]
+    is: [ protected ]

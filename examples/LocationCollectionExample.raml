@@ -1,0 +1,19 @@
+#%RAML 1.0 NamedExample
+value:
+  links:
+    self: /locations?filter[warehouse]=Briarcliff+Manor,NYC
+  data: 
+    - type: Location
+      id: "123"
+      attributes:
+        warehouse: Briarcliff Manor
+        aisle: "45"
+        shelf: "33"
+        bin: "1"
+    - type: Location
+      id: "12"
+      attributes:
+        warehouse: NYC
+        aisle: "1"
+        shelf: "2"
+        bin: "3"
