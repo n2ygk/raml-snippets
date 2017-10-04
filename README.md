@@ -167,7 +167,6 @@ to find type definitions. Json-schema.org uses `"{$ref": "#/definitions/<type>"}
 ## TO DO
 
 Still to do:
-- Add JSON API traits for filtering, sorting, paging.
 - Define a local standard for finding API metadata if a global standard isn't available.
 - Refactor for [OAS 3.0](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md)
 

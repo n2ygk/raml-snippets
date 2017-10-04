@@ -201,4 +201,67 @@ resourceTypes:
                 errors:
                   - status: "404"
                     title: Resource not found
-                    detail: <<resourcePath>> not found  
+                    detail: <<resourcePath>> not found 
+traits: 
+  pageable:
+    description: |
+      Collection response is [paginated](http://jsonapi.org/format/#fetching-pagination) with links: {self, first, next, prev, last} references.
+    queryParameters: 
+      page[number]:
+        description: Starts at page number
+        type: integer
+        required: false
+      page[size]:
+        description: Page size. Number of items per page.
+        type: integer
+        required: false
+      page[offset]:
+        description: Page offset. Starting item number.
+        type: integer
+        required: false
+      page[limit]:
+        description: Page limit. Limit on number of items or pages returned.
+        type: integer
+        required: false
+      page[cursor]:
+        description: Page cursor.
+        type: integer
+        required: false
+  sortable:
+    description: |
+      Collection response is [sorted](http://jsonapi.org/format/#fetching-sorting) in ascending or descending(-) order.
+    queryParameters: 
+      sort:
+        description: |
+          list of type.attributes to sort by. Use a `-` sign to indicate a descending sort.
+        type: string
+        required: false
+        example: |
+          sort=Location.warehouse,-Widget.qty
+  sparse:
+    description: |
+      Collection response has [sparse fieldsets](http://jsonapi.org/format/#fetching-sparse-fieldsets).
+    queryParameters: 
+      fields[{type}]:
+        description: |
+          Return only the listed attributes for the given type.
+        type: string
+        required: false
+        example: |
+          fields[Location]=warehouse,aisle&fields[Widget]=name
+  filterable:
+    description: filtering per the jsonapi [recommendation](http://jsonapi.org/recommendations/#filtering) (not in the base spec).
+    queryParameters: 
+      filter[{attr}]:
+        description: |
+          list of type.attributes and values to filter by. 
+          Use a comma-separated list for OR.
+          Use multiple filter[{attr}] queryParameters for AND.
+        type: string
+        required: false
+        example: |
+          filter[Location.warehouse]=NYC,Briarcliff+Manor&filter[Widget.qty]>3 
+  all-the-things:
+    description: |
+      All the collection queryParameter traits: pageable, sortable, sparse, filterable
+    is: [ pageable, sortable, sparse, filterable ]
