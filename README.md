@@ -36,13 +36,13 @@ uses:
 ...
 /widgets:
   get:
-	responses: 
-	  200:
-		body: 
-		  application/vnd.api+json:
-			type: api.success
-			properties: 
-			  data: widget[]
+    responses: 
+      200:
+        body: 
+          application/vnd.api+json:
+            type: api.success
+            properties: 
+              data: widget[]
 ```
   
 Make your API-specific `data` types subclasses of api.resource and your methods should use type api.success
@@ -68,10 +68,10 @@ uses:
   displayName: widgets
   description: stuff we have in inventory
   type: 
-	col.collection: 
-	  dataType: wid.Widget
-	  exampleCollection: !include examples/WidgetCollectionExample.raml
-	  exampleItem: !include examples/WidgetItemExample.raml
+    col.collection: 
+      dataType: wid.Widget
+      exampleCollection: !include examples/WidgetCollectionExample.raml
+      exampleItem: !include examples/WidgetItemExample.raml
 ```
 
 ## OAuth 2.0 types library
