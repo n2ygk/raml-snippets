@@ -92,10 +92,41 @@ Using the above-defined types, resourceTypes, and traits, we are able to DRY and
 a pretty concise root API document that focuses on what's unique about this API and
 reuses are standard patterns for OAuth 2.0-protected resources that follow the JSON API 1.0 spec.
 
+```
+#%RAML 1.0
+title: demo-jsonapi
+description: a sample RESTful API that conforms to jsonapi.org 1.0
+version: v1
+#...
+uses: 
+  api: libraries/jsonApiLibrary.raml
+  loc: libraries/LocationType.raml
+  wid: libraries/WidgetType.raml
+  col: libraries/jsonApiCollections.raml
+  cu: libraries/columbiaLibrary.raml
+
+# the API's resources:
+/widgets:
+  displayName: widgets
+  description: stuff we have in inventory
+  type: 
+    col.collection: 
+      dataType: wid.Widget
+      exampleCollection: !include examples/WidgetCollectionExample.raml
+      exampleItem: !include examples/WidgetItemExample.raml
+  get:
+    is: 
+      - cu.oauth_read_any
+  post:
+    is: 
+      - cu.oauth_create_any
+```
+
 ## TO DO
 
 Still to do:
 - Add JSON API traits for filtering, sorting, paging.
+- Refactor for [OAS 3.0](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md)
 
 ## Author
 Alan Crosswell
