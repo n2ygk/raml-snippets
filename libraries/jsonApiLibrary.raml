@@ -6,6 +6,11 @@ usage: >
   This library of RAML types is derived directly from the json-api 1.0 [specification](https://github.com/json-api/json-api/blob/gh-pages/schema)
   which is coded using the [json-schema.org](http://json-schema.org/documentation.html) specification. 
   
+  The following CHANGES have been made from the schema:
+    - resource.id is _not_ required because for POST request body it is optional whereas it is mandatory for response body.
+      I'm not super-happy with this compromise.
+    - I couldn't represent allOf for `links` so made a `pagelinks` type which extends `link`.
+  
   See the related jsonApiCollections.raml Library for useful resourceTypes and traits that uses these types.
   
   Jsonapi uses mediatype `application/vnd.api+json` in requests and responses. 
@@ -122,7 +127,13 @@ types:
         required: true
         type: string
       id:
-        required: true
+        description: |
+          A resource object MUST contain at least the following top-level members:
+          - id
+          - type
+          Exception: The id member is not required when the resource object originates at the client and represents a new resource to be created on the server.
+          (This is a bug in the [jsonapi grammar](http://jsonapi.org/format/#document-resource-objects); make the id not required so that POSTing works!)
+        required: false
         type: string
       attributes:
         required: false

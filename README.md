@@ -120,11 +120,9 @@ uses:
       exampleCollection: !include examples/WidgetCollectionExample.raml
       exampleItem: !include examples/WidgetItemExample.raml
   get:
-    is: 
-      - cu.oauth_read_any
+    is: [ cu.oauth_read_any, col.all-the-things ]
   post:
-    is: 
-      - cu.oauth_create_any
+    is: [ cu.oauth_create_any ]
 ```
 
 ## Issues
