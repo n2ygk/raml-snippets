@@ -260,8 +260,19 @@ traits:
         type: string
         required: false
         example: |
-          filter[Location.warehouse]=NYC,Briarcliff+Manor&filter[Widget.qty]>3 
+          filter[Location.warehouse]=NYC,Briarcliff+Manor&filter[Widget.qty]>3
+  includable:
+    description: Collection response should [include](http://jsonapi.org/format/#fetching-includes)
+      only the related resources listed.
+    queryParameters: 
+      include:
+        description: |
+          The value of the include parameter MUST be a comma-separated list of relationship paths. A relationship path is a dot-separated list of relationship names.
+        type: string
+        required: false
+        example: |
+          include=Locations.Cities
   all-the-things:
     description: |
       All the collection queryParameter traits: pageable, sortable, sparse, filterable
-    is: [ pageable, sortable, sparse, filterable ]
+    is: [ pageable, sortable, sparse, filterable, includable ]
