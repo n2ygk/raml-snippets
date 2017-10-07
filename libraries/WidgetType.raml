@@ -2,14 +2,12 @@
 usage: Schema for a Widget
 uses:
   api: jsonApiLibrary.raml
-  loc: LocationType.raml
 types:
   Widget:
     type: api.resource
-    description: a widget
+    description: a widget's primary data
     properties:
       attributes:
-        type: api.attributes
         properties:
           name:
             required: true
@@ -20,10 +18,9 @@ types:
             type: integer
             minimum: 0
             description: quantity
-          locations:
-            required: false
-            type: loc.Location[]
-            description: location(s) of item(s)
+      relationships:
+        type: WidgetRelationships
+        required: false
     additionalProperties: false
     example:
       type: Widget
@@ -31,18 +28,31 @@ types:
       attributes:
         name: can opener
         qty: 42
-        locations: 
+      relationships:
+        location:
+          data: 
+            - type: Location
+              id: "14"     
+            - type: Location
+              id: "15"
+          links:
+            self: /widgets/abc-123/relationships/location
+  WidgetRelationships:
+    type: object
+    description: |
+      A widget's relationships: 
+        - location
+    properties:
+      location:
+        type: api.relationshipMember
+        description: location in inventory
+        required: false
+    example:
+      location:
+        data: 
           - type: Location
-            id: "14"
-            attributes:
-              warehouse: NYC
-              aisle: "3"
-              shelf: "4"
-              bin: "22"        
+            id: "14"     
           - type: Location
             id: "15"
-            attributes:
-              warehouse: NYC
-              aisle: "3"
-              shelf: "4"
-              bin: "23"
+        links:
+          self: /widgets/abc-123/relationships/location

@@ -6,10 +6,12 @@ usage: >
   This library of RAML types is derived directly from the json-api 1.0 [specification](https://github.com/json-api/json-api/blob/gh-pages/schema)
   which is coded using the [json-schema.org](http://json-schema.org/documentation.html) specification. 
   
-  The following CHANGES have been made from the schema:
+  The following CHANGES have been made from the schema's YAML:
     - resource.id is _not_ required because for POST request body it is optional whereas it is mandatory for response body.
-      I'm not super-happy with this compromise.
+      I'm not super-happy with this. Find a fix.
     - I couldn't represent allOf for `links` so made a `pagelinks` type which extends `link`.
+    - Fix attributes and relationships types (patternProperties not directly mappable to RAML)
+    - Move type: up for readability and changed type: array/items: into just type: itemtype[]
   
   See the related jsonApiCollections.raml Library for useful resourceTypes and traits that uses these types.
   
@@ -64,55 +66,53 @@ types:
     additionalProperties: false
     properties:
       data:
-        required: true
         type: data
+        required: true
       included:
+        type: resource[]
         required: false
         description: To reduce the number of HTTP requests, servers **MAY** allow responses that include related resources along with the requested primary resources. Such responses are called "compound documents".
-        type: array
-        items: resource
         uniqueItems: true
       meta:
-        required: false
         type: meta
+        required: false
       links:
+        type: pagelinks # had to add this manually due to no RAML allOf
         required: false
         description: Link members related to the primary data.
-        type: pagelinks # had to add this manually due to no RAML allOf
       jsonapi:
-        required: false
         type: jsonapi
+        required: false
   failure:
     type: object
     additionalProperties: false
     properties:
       errors:
+        type: error[]
         required: true
-        type: array
-        items: error
         uniqueItems: true
       meta:
-        required: false
         type: meta
+        required: false
       jsonapi:
-        required: false
         type: jsonapi
-      links:
         required: false
+      links:
         type: links
+        required: false
   info:
     type: object
     additionalProperties: false
     properties:
       meta:
-        required: true
         type: meta
+        required: true
       links:
-        required: false
         type: links
-      jsonapi:
         required: false
+      jsonapi:
         type: jsonapi
+        required: false
   meta:
     type: object
     additionalProperties: true
@@ -124,8 +124,8 @@ types:
     additionalProperties: false
     properties:
       type:
-        required: true
         type: string
+        required: true
       id:
         description: |
           A resource object MUST contain at least the following top-level members:
@@ -133,22 +133,24 @@ types:
           - type
           Exception: The id member is not required when the resource object originates at the client and represents a new resource to be created on the server.
           (This is a bug in the [jsonapi grammar](http://jsonapi.org/format/#document-resource-objects); make the id not required so that POSTing works!)
-        required: false
         type: string
+        required: false
       attributes:
-        required: false
         type: attributes
+        required: false
       relationships:
-        required: false
         type: relationships
+        required: false
       links:
-        required: false
         type: links
-      meta:
         required: false
+      meta:
         type: meta
-  attributes:                                                                                             
-    additionalProperties: true # json:api uses json-schema patternProperties to disallow certain keys
+        required: false
+  # json:api uses json-schema patternProperties to disallow certain reserved words:
+  #  ^(?!relationships$|links$|id$|type$). Unable to represent this in RAML.
+  attributes:                                                                                
+    additionalProperties: true 
     description: Members of the attributes object ("attributes") represent information                    
       about the resource object in which it's defined.
     type: object
@@ -157,12 +159,12 @@ types:
     additionalProperties: true
     properties:
       self:
+        type: link
         required: false
         description: A `self` member, whose value is a URL for the relationship itself (a "relationship URL"). This URL allows the client to directly manipulate the relationship. For example, it would allow a client to remove an `author` from an `article` without deleting the people resource itself.
-        type: link
       related:
-        required: false
         type: link
+        required: false
   links:
     type: object
     additionalProperties: true
@@ -182,16 +184,35 @@ types:
         description: A string containing the link's URL.
       meta:
         type: meta
+  # json:api uses json-schema patternProperties to disallow certain reserved words:
+  #  ^(?!id$|type$). Unable to represent this in RAML also because the relationships
+  # type is a two-level object where the top-level keys are user-defined. Split up
+  # into relationship and relationshipMember.
+  relationshipMember:
+    type: object
+    description: Members of the relationships object ("relationships") represent references
+      from the resource object in which it's defined to other resource objects.
+      ANY of data,links,meta.
+    properties: 
+      data:
+        type: relationshipToOne | relationshipToMany
+        required: false
+      links:
+        type: relationshipLinks
+        required: false
+      meta:
+        type: meta
+        required: false
+    additionalProperties: false
   relationships:
     type: object
-    additionalProperties: false
+    additionalProperties: true 
   relationshipToOne:
     type: empty | linkage
     description: References to other resource objects in a to-one (\"relationship\"). Relationships can be specified by including a member in a resource's links object.
   relationshipToMany:
-    type: array
+    type: linkage[]
     description: An array of objects each containing \"type\" and \"id\" members for to-many relationships.
-    items: linkage
     uniqueItems: true
   empty:
     type: nil
@@ -200,33 +221,33 @@ types:
     additionalProperties: false
     properties:
       type:
-        required: true
         type: string
+        required: true
       id:
-        required: true
         type: string
+        required: true
       meta:
-        required: false
         type: meta
+        required: false
   pagination:
     type: object
     properties:
       first:
+        type: uristring | nil # oneOf
         required: false
         description: The first page of data
-        type: uristring | nil # oneOf
       last:
+        type: uristring | nil # oneOf
         required: false
         description: The last page of data
-        type: uristring | nil # oneOf
       prev:
+        type: uristring | nil # oneOf
         required: false
         description: The previous page of data
-        type: uristring | nil # oneOf
       next:
+        type: uristring | nil # oneOf
         required: false
         description: The next page of data
-        type: uristring | nil # oneOf
   uristring:
     type: string # TODO uri-reference format
   jsonapi:
@@ -234,48 +255,48 @@ types:
     additionalProperties: false
     properties:
       version:
-        required: false
         type: string
-      meta:
         required: false
+      meta:
         type: meta
+        required: false
   error:
     type: object
     additionalProperties: false
     properties:
       id:
+        type: string
         required: false
         description: A unique identifier for this particular occurrence of the problem.
-        type: string
       links:
-        required: false
         type: links
+        required: false
       status:
+        type: string
         required: false
         description: The HTTP status code applicable to this problem, expressed as a string value.
-        type: string
       code:
+        type: string
         required: false
         description: An application-specific error code, expressed as a string value.
-        type: string
       title:
+        type: string
         required: false
         description: A short, human-readable summary of the problem. It **SHOULD NOT** change from occurrence to occurrence of the problem, except for purposes of localization.
-        type: string
       detail:
+        type: string
         required: false
         description: A human-readable explanation specific to this occurrence of the problem.
-        type: string
       source:
-        required: false
         type: object
+        required: false
         properties:
           pointer:
+            type: string
             description: A JSON Pointer [RFC6901] to the associated entity in the request document [e.g. "/data" for a primary data object, or "/data/attributes/title" for a specific attribute].
-            type: string
           parameter:
-            description: A string indicating which query parameter caused the error.
             type: string
+            description: A string indicating which query parameter caused the error.
       meta:
-        required: false
         type: meta
+        required: false

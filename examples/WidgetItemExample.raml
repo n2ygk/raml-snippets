@@ -1,25 +1,19 @@
 #%RAML 1.0 NamedExample
 value:
   links:
-    self: /widgets/14
+    self: /widgets/abc-123
   data: 
     type: Widget
-    id: "14"
+    id: "abc-123"
     attributes:
       name: "can opener"
       qty: 47
-      locations:
-        - type: Location
-          id: "10510"
-          attributes:
-            warehouse: Briarcliff Manor
-            aisle: "45"
-            shelf: "33"
-            bin: "1"
-        - type: Location
-          id: "333"
-          attributes:
-            warehouse: Secaucus
-            aisle: "1"
-            shelf: "1"
-            bin: "1"
+    relationships:
+      location:
+        data: 
+          - type: Location
+            id: "1234"     
+          - type: Location
+            id: "1235"
+        links:
+          self: /widgets/abc-123/relationships/location

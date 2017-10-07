@@ -36,7 +36,8 @@ resourceTypes:
       This resourceType should be used for any collection of items.
       Parameters:
         dataType: the type name of the primary data
-        exampleCollection: an example of the api.success response
+        exampleCollection: an example of the response for a GET of the collection.
+        exampleItem: an example of the body/response for a POST to the collection.
     description: The collection of <<resourcePathName>>
     get:
       description: Get a collection of <<resourcePathName>>.
@@ -112,6 +113,7 @@ resourceTypes:
       This resourceType should be used for any single items
       Parameters:
         dataType: the type name of the primary data (must subclass api.response)
+        relType: the type name of the relationships
         exampleItem: an example of the api.success response
     description: The <<resourcePathName>> item
     get:
