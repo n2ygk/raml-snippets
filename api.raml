@@ -52,7 +52,7 @@ uses:
         dataType: wid.Widget
         exampleItem: !include examples/WidgetItemExample.raml
     get:
-      is: [ cu.oauth_read_any ]
+      is: [ cu.oauth_read_any, col.sparse ]
     patch:
       is: [ cu.oauth_update_any ]
     delete:
@@ -75,7 +75,7 @@ uses:
         dataType: loc.Location
         exampleItem: !include examples/LocationItemExample.raml
     get:
-      is: [ cu.oauth_read_any ]
+      is: [ cu.oauth_read_any, col.sparse ]
     patch:
       is: [ cu.oauth_update_any ]
     delete:
