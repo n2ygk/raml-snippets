@@ -1,0 +1,17 @@
+#%RAML 1.0 Library
+usage: Schema for the object store. Can be used to GET and DELETE all objects.
+uses:
+  api: jsonApiLibrary.raml
+types:
+  objects:
+    type: api.resource
+    description: an objectstore entry
+    additionalProperties: true
+    example:
+        type: locations
+        id: "14"
+        attributes:
+          warehouse: NYC
+          aisle: "3"
+          shelf: "4"
+          bin: "22"

@@ -3,7 +3,7 @@ usage: Schema for a Widget
 uses:
   api: jsonApiLibrary.raml
 types:
-  Widget:
+  widgets:
     type: api.resource
     description: a widget's primary data
     properties:
@@ -23,7 +23,7 @@ types:
         required: false
     additionalProperties: false
     example:
-      type: Widget
+      type: widgets
       id: abc-123
       attributes:
         name: can opener
@@ -50,9 +50,9 @@ types:
     example:
       location:
         data: 
-          - type: Location
+          - type: locations
             id: "14"     
-          - type: Location
+          - type: locations
             id: "15"
         links:
           self: /widgets/abc-123/relationships/location

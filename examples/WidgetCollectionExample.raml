@@ -1,20 +1,20 @@
 #%RAML 1.0 NamedExample
 value:
   links:
-    self: /widgets?filter[Widget.name]=can+opener,foobar
+    self: /widgets?filter[widgets.name]=can+opener,foobar
   data: 
-    - type: Widget
+    - type: widgets
       id: "123"
       attributes:
         name: "foobar"
       relationships:
         location:
           data: 
-            - type: Location
+            - type: locations
               id: "1"
           links:
             self: /widgets/123/relationships/location
-    - type: Widget
+    - type: widgets
       id: "14"
       attributes:
         name: "can opener"
@@ -22,9 +22,9 @@ value:
       relationships:
         location:
           data: 
-            - type: Location
+            - type: locations
               id: "1234"     
-            - type: Location
+            - type: locations
               id: "1235"
           links:
             self: /widgets/14/relationships/location

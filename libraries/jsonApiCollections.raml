@@ -4,10 +4,30 @@ usage: >
   
   This is a companion to the jsonApiLibrary.raml Library. 
   
+  It implements the `collection` and `item`
+  resourceTypes and follows [{json:api} recommendations](http://jsonapi.org/recommendations/#urls)
+  regarding URL naming: a resourcePathName should be the same as it's type (both plural nouns). However, because
+  we may be using RAML Libraries for those type definitions, one can't use <<resourcePathName>> but must still
+  provide a <<dataType>>.
+  
+  Traits of `pageable`, `sortable`, `sparse`, `filterable`, `includable` are provided which describe the various
+  [standard](http://jsonapi.org/format) query parameters, including [recommended](http://jsonapi.org/recommendations) usage.
+  For convenince, the `all-the-things` trait combines all the above-listed traits.
+  
   Usage:
   ```
   uses:
     col: libraries/jsonApiCollections.raml
+    wid: libraries/WidgetType.raml
+  # ...
+  /widgets:
+    type: 
+      col.collection: # type is widgets because the resource name is.
+        dataType: wid.widgets
+        exampleCollection: !include examples/WidgetCollectionExample.raml
+        exampleItem: !include examples/WidgetItemExample.raml
+    get:
+      is: [ col.all-the-things ]  
   ```
   
   For reasons I don't quite understand, you must use this with the same `uses` key name
@@ -115,7 +135,7 @@ resourceTypes:
         dataType: the type name of the primary data (must subclass api.response)
         relType: the type name of the relationships
         exampleItem: an example of the api.success response
-    description: The <<resourcePathName>> item
+    description: The <<dataType>> item
     get:
       responses: 
         200:

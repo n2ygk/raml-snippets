@@ -3,12 +3,11 @@ usage: Schema for a Location
 uses:
   api: jsonApiLibrary.raml
 types:
-  Location:
+  locations:
     type: api.resource
     description: a warehouse location
     properties:
       attributes:
-        #type: api.attributes
         properties:
           warehouse:
             required: true
@@ -28,7 +27,7 @@ types:
             description: bin on shelf
     additionalProperties: false
     example:
-        type: Location
+        type: locations
         id: "14"
         attributes:
           warehouse: NYC

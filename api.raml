@@ -13,7 +13,7 @@ documentation:
     content: 
       The types defined in library `jsonApiLibrary.raml` are derived directly from the jsonsapi 1.0 
       [specification](https://github.com/json-api/json-api/blob/gh-pages/schema)
-      which is defined using the [json-schema.org](http://json-schema.org/documentation.html) specification.
+      (which is defined using the [json-schema.org](http://json-schema.org/documentation.html) specification).
       They were translated from JSON to YAML and then manually edited in several cases where a json:api
       capability is not directly available in RAML (for instance, _patternProperties_). 
       
@@ -32,6 +32,7 @@ uses:
   wid: libraries/WidgetType.raml
   col: libraries/jsonApiCollections.raml
   cu: libraries/columbiaLibrary.raml
+  obj: libraries/ObjectType.raml
 
 # the API's resources:
 /widgets:
@@ -39,7 +40,7 @@ uses:
   description: stuff we have in inventory
   type: 
     col.collection: 
-      dataType: wid.Widget
+      dataType: wid.widgets
       exampleCollection: !include examples/WidgetCollectionExample.raml
       exampleItem: !include examples/WidgetItemExample.raml
   get:
@@ -49,7 +50,7 @@ uses:
   /{id}:
     type: 
      col.item:
-        dataType: wid.Widget
+        dataType: wid.widgets
         exampleItem: !include examples/WidgetItemExample.raml
     get:
       is: [ cu.oauth_read_any, col.sparse ]
@@ -62,7 +63,7 @@ uses:
   description: inventory locations
   type: 
     col.collection: 
-      dataType: loc.Location
+      dataType: loc.locations
       exampleCollection: !include examples/LocationCollectionExample.raml
       exampleItem: !include examples/LocationItemExample.raml
   get:
@@ -72,7 +73,7 @@ uses:
   /{id}:
     type: 
      col.item:
-        dataType: loc.Location
+        dataType: loc.locations
         exampleItem: !include examples/LocationItemExample.raml
     get:
       is: [ cu.oauth_read_any, col.sparse ]
@@ -80,3 +81,20 @@ uses:
       is: [ cu.oauth_update_any ]
     delete:
       is: [ cu.oauth_delete_any ]
+/objects:
+  displayName: objects
+  description: The object store persists all the types used above. Use this utility resource
+    to GET or DELETE the entire contents of the object store.
+  type: 
+    col.collection:
+      dataType: obj.objects
+      exampleCollection: !include examples/ObjectCollectionExample.raml
+      exampleItem: !include examples/ObjectItemExample.raml
+  get:
+    is: [ cu.oauth_read_any ]
+  delete:
+    description: DELETES the entire object store
+    is: [ cu.oauth_delete_any ]
+    responses: 
+      204:
+        description: Sucessfully deleted. No content returned.
