@@ -4,24 +4,11 @@ uses:
   api: jsonApiLibrary.raml
 types:
   widgets:
-    type: api.resource
-    description: a widget's primary data
+    description: a widget response
+    type: widgets_post
     properties:
-      attributes:
-        properties:
-          name:
-            required: true
-            type: string
-            description: catalog name
-          qty:
-            required: false
-            type: integer
-            minimum: 0
-            description: quantity
-      relationships:
-        type: WidgetRelationships
-        required: false
-    additionalProperties: false
+      id:
+        required: true
     example:
       type: widgets
       id: abc-123
@@ -37,6 +24,66 @@ types:
               id: "15"
           links:
             self: /widgets/abc-123/relationships/location
+  widgets_post:
+    description: a POSTable widget's primary (id is optional, required attributes are indicated)
+    type: widgets_patch
+    # looks like inheritance is not multi-level. This is WET!
+    properties:
+      attributes:
+        properties:
+          name:
+            required: true
+            type: string
+            description: catalog name
+          qty:
+            required: false
+            type: integer
+            minimum: 0
+            description: quantity
+    example:
+      type: widgets
+      attributes:
+        name: can opener
+        qty: 42
+      relationships:
+        location:
+          data: 
+            - type: Location
+              id: "14"     
+            - type: Location
+              id: "15"
+          links:
+            self: /widgets/abc-123/relationships/location
+  widgets_patch:
+    description: a PATCHable widget's primary data. Only supply attributes or relationships that are changed.
+    type: api.resource_post
+    properties:
+      attributes:
+        properties:
+          name:
+            required: false
+            type: string
+            description: catalog name
+          qty:
+            required: false
+            type: integer
+            minimum: 0
+            description: quantity
+      relationships:
+        type: WidgetRelationships
+        required: false
+    additionalProperties: false
+    example:
+      type: widgets
+      id: abc-123
+      attributes:
+        qty: 42
+      relationships:
+        location:
+          data: 
+            - type: Location
+              id: "13"
+# TODO: add _patch version?
   WidgetRelationships:
     type: object
     description: |
@@ -50,9 +97,9 @@ types:
     example:
       location:
         data: 
-          - type: locations
+          - type: Location
             id: "14"     
-          - type: locations
+          - type: Location
             id: "15"
         links:
           self: /widgets/abc-123/relationships/location

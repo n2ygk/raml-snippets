@@ -7,8 +7,8 @@ usage: >
   which is coded using the [json-schema.org](http://json-schema.org/documentation.html) specification. 
   
   The following CHANGES have been made from the schema's YAML:
-    - resource.id is _not_ required because for POST request body it is optional whereas it is mandatory for response body.
-      I'm not super-happy with this. Find a fix.
+    - resource type is redefined a subclass of resource\_post because id is _not_ required for POST request body 
+      whereas it is mandatory for response body.
     - I couldn't represent allOf for `links` so made a `pagelinks` type which extends `link`.
     - Fix attributes and relationships types (patternProperties not directly mappable to RAML)
     - Move type: up for readability and changed type: array/items: into just type: itemtype[]
@@ -62,6 +62,7 @@ usage: >
 
 types:
   success:
+    description: A succesful (2xx) response body.
     type: object
     additionalProperties: false
     properties:
@@ -84,6 +85,7 @@ types:
         type: jsonapi
         required: false
   failure:
+    description: A failure (4xx) response body.
     type: object
     additionalProperties: false
     properties:
@@ -101,6 +103,7 @@ types:
         type: links
         required: false
   info:
+    description: An information-only response body.
     type: object
     additionalProperties: false
     properties:
@@ -114,12 +117,20 @@ types:
         type: jsonapi
         required: false
   meta:
+    description: Where specified, a meta member can be used to include non-standard meta-information.
     type: object
     additionalProperties: true
   data:
+    description: The document's \"primary data\" is a representation of the resource or collection of resources.
     type: resource | resource[] | nil
-    description: The document's \"primary data\" is a representation of the resource or collection of resources targeted by a request.
   resource:
+    description: A resource must have both a type and id. Additional properties (see resource_post) are optional.
+    type: resource_post
+    properties:
+      id:
+        required: true
+  resource_post:
+    description: A postable resource does not require the `id` property as it is generally assigned by the posting server.
     type: object
     additionalProperties: false
     properties:
@@ -127,12 +138,6 @@ types:
         type: string
         required: true
       id:
-        description: |
-          A resource object MUST contain at least the following top-level members:
-          - id
-          - type
-          Exception: The id member is not required when the resource object originates at the client and represents a new resource to be created on the server.
-          (This is a bug in the [jsonapi grammar](http://jsonapi.org/format/#document-resource-objects); make the id not required so that POSTing works!)
         type: string
         required: false
       attributes:
@@ -147,6 +152,7 @@ types:
       meta:
         type: meta
         required: false
+
   # json:api uses json-schema patternProperties to disallow certain reserved words:
   #  ^(?!relationships$|links$|id$|type$). Unable to represent this in RAML.
   attributes:                                                                                

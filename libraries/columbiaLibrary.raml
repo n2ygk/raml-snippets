@@ -49,20 +49,20 @@ securitySchemes:
             Access Token successfully issued.
           body:
             application/json:
-              type: oa2.success
+              type: oa2.OAuth2success
         401:
           description: |
                 Bad or expired token. This can happen if the user or the API revoked or expired an access token. To fix, you should re-authenticate the user.
           body: 
             application/json:
-              type: oa2.error
+              type: oa2.OAuth2error
         403:
           description: |
                 Bad OAuth request (wrong consumer key, bad nonce, expired timestamp...). Unfortunately,
                 re-authenticating the user won't help here.
           body: 
             application/json:
-              type: oa2.error
+              type: oa2.OAuth2error
     settings:
       authorizationUri: https://oauth.cc.columbia.edu/as/authorization.oauth2
       accessTokenUri: https://oauth.cc.columbia.edu/as/token.oauth2
@@ -92,12 +92,12 @@ traits:
         description: Unauthorized
         body: 
           application/json:
-            type: oa2.error
+            type: oa2.OAuth2error
       403:
         description: Forbidden
         body: 
           application/json:
-            type: oa2.error
+            type: oa2.OAuth2error
       429:  
         description: rate-limiting policy SLA has been exceeded.
         body:

@@ -2,7 +2,7 @@
 usage: |
   OAuth 2.0 response types. See [RFC 6749](https://tools.ietf.org/html/rfc6749)
 types:
-  success:
+  OAuth2success:
     description: |
       [RFC 6749 success response](https://tools.ietf.org/html/rfc6749#section-5.1)
     type: object
@@ -37,7 +37,7 @@ types:
           otherwise, REQUIRED.
         required: false
     additionalProperties: true
-  error:
+  OAuth2error:
     description: |
       [RFC 6749 Error response](https://tools.ietf.org/html/rfc6749#section-5.2)
     type: object

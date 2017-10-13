@@ -4,11 +4,25 @@ uses:
   api: jsonApiLibrary.raml
 types:
   locations:
-    type: api.resource
-    description: a warehouse location
+    description: A location response
+    type: locations_post
     properties:
+      id:
+        required: true
+    example:
+        type: locations
+        id: "14"
+        attributes:
+          warehouse: NYC
+          aisle: "3"
+          shelf: "4"
+          bin: "22"
+  locations_post:
+    description: a POSTable warehouse location (id is optional, required attributes are indicated)
+    type: locations_patch
+    properties: 
       attributes:
-        properties:
+        properties: 
           warehouse:
             required: true
             type: string
@@ -25,12 +39,39 @@ types:
             required: true
             type: string
             description: bin on shelf
+    example:
+        type: locations
+        attributes:
+          warehouse: NYC
+          aisle: "3"
+          shelf: "4"
+          bin: "22"
+  locations_patch:
+    description: a PATCHable warehouse location. Only supply attributes or relationships that are changed.
+    type: api.resource_post
+    properties:
+      attributes:
+        properties:
+          warehouse:
+            required: false
+            type: string
+            description: warehouse identifier
+          aisle:
+            required: false
+            type: string
+            description: aisle in warehouse
+          shelf:
+            required: false
+            type: string
+            description: shelf in aisle
+          bin:
+            required: false
+            type: string
+            description: bin on shelf
     additionalProperties: false
     example:
         type: locations
         id: "14"
         attributes:
-          warehouse: NYC
-          aisle: "3"
           shelf: "4"
           bin: "22"

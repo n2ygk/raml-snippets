@@ -4,11 +4,18 @@ uses:
   api: jsonApiLibrary.raml
 types:
   objects:
-    type: api.resource
+    type: objects_post
+    properties:
+      id:
+        required: true
+  objects_post:
+    type: objects_patch
+  objects_patch:
+    type: api.resource_post
     description: an objectstore entry
     additionalProperties: true
     example:
-        type: locations
+        type: objects
         id: "14"
         attributes:
           warehouse: NYC
