@@ -9,11 +9,30 @@ value:
       name: "can opener"
       qty: 47
     relationships:
-      location:
+      locations:
         data: 
           - type: locations
             id: "1234"     
           - type: locations
             id: "1235"
         links:
-          self: /widgets/abc-123/relationships/location
+          self: /widgets/abc-123/relationships/locations
+  included:
+    - type: locations
+      id: "1234"
+      attributes:
+        warehouse: Briarcliff Manor
+        aisle: "45"
+        shelf: "33"
+        bin: "1"
+      links:
+        self: /locations/1234
+    - type: locations
+      id: "1235"
+      attributes:
+        warehouse: NYC
+        aisle: "4"
+        shelf: "3"
+        bin: "12"      
+      links:
+        self: /locations/1235

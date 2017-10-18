@@ -16,11 +16,11 @@ types:
         name: can opener
         qty: 42
       relationships:
-        location:
+        locations:
           data: 
-            - type: Location
+            - type: locations
               id: "14"     
-            - type: Location
+            - type: locations
               id: "15"
           links:
             self: /widgets/abc-123/relationships/location
@@ -46,14 +46,14 @@ types:
         name: can opener
         qty: 42
       relationships:
-        location:
+        locations:
           data: 
-            - type: Location
+            - type: locations
               id: "14"     
-            - type: Location
+            - type: locations
               id: "15"
           links:
-            self: /widgets/abc-123/relationships/location
+            self: /widgets/abc-123/relationships/locations
   widgets_patch:
     description: a PATCHable widget's primary data. Only supply attributes or relationships that are changed.
     type: api.resource_post
@@ -79,9 +79,9 @@ types:
       attributes:
         qty: 42
       relationships:
-        location:
+        locations:
           data: 
-            - type: Location
+            - type: locations
               id: "13"
 # TODO: add _patch version?
   WidgetRelationships:
@@ -90,16 +90,16 @@ types:
       A widget's relationships: 
         - location
     properties:
-      location:
+      locations:
         type: api.relationshipMember
-        description: location in inventory
+        description: locations in inventory (to-many)
         required: false
     example:
-      location:
+      locations:
         data: 
-          - type: Location
+          - type: locations
             id: "14"     
-          - type: Location
+          - type: locations
             id: "15"
         links:
-          self: /widgets/abc-123/relationships/location
+          self: /widgets/abc-123/relationships/locations
