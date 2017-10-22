@@ -10,6 +10,10 @@ usage: >
   we may be using RAML Libraries for those type definitions, one can't use *resourcePathName* but must still
   provide a *dataType*.
   
+  The `relationshipCollection` is a special resourceType for _to-many_ `relationships` that allows GET, POST, PATCH & DELETE.
+  (Normal `collection`s don't allow PATCH or DELETE of the entire collection.) The `relationshipItem` is a special
+  resourceType for _to-one_ `relationships` that allows GET & PATCH.
+  
   **collection required parameters**:
   - dataType: the response RAML type (e.g. `mythings`). You must also define types named e.g. `mythings_post` and
     `mythings_patch`. These are all subclasses of on another with various properties labeled as true. This deals
@@ -230,7 +234,193 @@ resourceTypes:
                 errors:
                   - status: "404"
                     title: Resource not found
+                    detail: <<resourcePath>> not found
+  relationshipCollection:
+    displayName: Relationship collection
+    description: A [relationship collection](http://jsonapi.org/format/#crud-updating-to-many-relationships)
+    get:
+      description: Get a collection of <<resourcePathName>>.
+      responses: 
+        200:
+          description: Success. Response contains the primary data and optional metadata.
+          body: 
+            application/vnd.api+json:
+              type: api.success
+              properties: 
+                data: <<dataType>>[]
+              example: 
+                <<exampleCollection>>
+        404:
+          description: Not found. Response contains a list of error(s).
+          body:
+            application/vnd.api+json:
+              type: api.failure
+              example:
+                errors:
+                  - status: "404"
+                    title: Resource not found
                     detail: <<resourcePath>> not found 
+    post:
+      description: Create a new <<resourcePathName|!singularize>>.
+      body: 
+        application/vnd.api+json:
+          type: <<dataType>>_post
+      responses:
+        201:
+          description: Created. Response contains the created <<resourcePathName|!singularize>>
+            Location header *may* contain the URI.
+          headers: 
+            location?: api.uristring
+          body: 
+            application/vnd.api+json:
+              type: api.success
+              properties: 
+                data: <<dataType>>
+              example: <<exampleItem>>
+        202:
+          description: Accepted for processing. Request has not yet completed.
+        204:
+          description: No Content.
+        403:
+          description: Forbidden
+          body:
+            application/vnd.api+json:
+              type: api.failure
+        404:
+          description: Related resource not found
+          body:
+            application/vnd.api+json:
+              type: api.failure
+              example:
+                errors:
+                  - status: "404"
+                    title: Resource not found
+                    detail: related resource not found 
+        409:
+          description: Failed to create a resource with a client-generated ID that already exists.
+            Or, the resource object’s type is not among the type(s) that constitute the collection represented by the endpoint.
+            Or, the update would violate other server-enforced constraints including type and id mismatch.
+          body:
+            application/vnd.api+json:
+              type: api.failure
+              example:
+                errors:
+                  - status: "409"
+                    title: Conflict
+    patch:
+      description: Update an existing <<resourcePath|!singularize>> relationship.
+      body: 
+        application/vnd.api+json:
+          type: <<dataType>>_patch
+      responses:
+        200:
+          description: |
+            The PATCH was accepted and some values may have changed beyond those specified.
+            The response contains the result of those updates.
+          body: 
+            application/vnd.api+json:
+              type: api.success
+              properties: 
+                data: <<dataType>>
+              example: <<exampleItem>>
+        202:
+          description: Accepted for processing. Request has not yet completed.
+        204:
+          description: No Content. Only those changes submitted have been applied.
+        403:
+          description: Forbidden
+          body:
+            application/vnd.api+json:
+              type: api.failure
+        404:
+          description: Not Found
+          body:
+            application/vnd.api+json:
+              type: api.failure
+              example:
+                errors:
+                  - status: "404"
+                    title: Resource not found
+                    detail: <<resourcePath>> not found 
+        409:
+          description: Failed to update a resource if that update would violate other server-enforced constraints
+            (such as a uniqueness constraint on a property other than id).
+            Or, the resource object’s type and id do not match the server’s endpoint.
+          body:
+            application/vnd.api+json:
+              type: api.failure
+              example:
+                errors:
+                  - status: "409"
+                    title: Conflict
+  relationshipItem:
+    description: A [relationship item](http://jsonapi.org/format/#crud-updating-to-one-relationships)
+    get:
+      responses: 
+        200:
+          description: Success. Response contains the primary data and optional metadata.
+          body: 
+            application/vnd.api+json:
+              type: api.success
+              properties: 
+                data: <<dataType>>
+              example: 
+                <<exampleItem>>
+        404:
+          body:
+            application/vnd.api+json:
+              type: api.failure
+              example:
+                errors:
+                  - status: "404"
+                    title: Resource not found
+                    detail: <<resourcePath>> not found 
+    patch:
+      description: Update an existing <<resourcePath|!singularize>>.
+      body: 
+        application/vnd.api+json:
+          type: <<dataType>>_patch
+      responses:
+        200:
+          description: |
+            The PATCH was accepted and some values may have changed beyond those specified.
+            The response contains the result of those updates.
+          body: 
+            application/vnd.api+json:
+              type: api.success
+              properties: 
+                data: <<dataType>>
+              example: <<exampleItem>>
+        202:
+          description: Accepted for processing. Request has not yet completed.
+        204:
+          description: No Content. Only those changes submitted have been applied.
+        403:
+          description: Forbidden
+          body:
+            application/vnd.api+json:
+              type: api.failure
+        404:
+          description: Not Found
+          body:
+            application/vnd.api+json:
+              type: api.failure
+              example:
+                errors:
+                  - status: "404"
+                    title: Resource not found
+                    detail: <<resourcePath>> not found 
+        409:
+          description: Failed to update a resource if that update would violate other server-enforced constraints
+            (such as a uniqueness constraint on a property other than id).
+            Or, the resource object’s type and id do not match the server’s endpoint.
+          body:
+            application/vnd.api+json:
+              type: api.failure
+              example:
+                errors:
+                  - status: "409"
+                    title: Conflict
 traits: 
   pageable:
     description: |

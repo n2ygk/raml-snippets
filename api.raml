@@ -49,7 +49,7 @@ uses:
     is: [ cu.oauth_create_any ]
   /{id}:
     type: 
-     col.item:
+      col.item:
         dataType: wid.widgets
         exampleItem: !include examples/WidgetItemExample.raml
     get:
@@ -58,6 +58,34 @@ uses:
       is: [ cu.oauth_update_any ]
     delete:
       is: [ cu.oauth_delete_any ]
+    /relationships:
+      description: widget relationships
+      # no methods here...
+      /locations:
+        description: (many) locations of widgets in inventory
+        type:
+          col.relationshipCollection:
+            dataType: wid.widgets_relationships_locations
+            exampleCollection: !include examples/WidgetRelationshipsLocationsCollectionExample.raml
+            exampleItem: !include examples/WidgetRelationshipsLocationsItemExample.raml
+        get:
+          is: [ cu.oauth_read_any, col.all-the-things ]
+        post:
+          is: [ cu.oauth_create_any ]
+        patch:
+          is: [ cu.oauth_update_any ]
+        delete:
+          is: [ cu.oauth_delete_any ]
+      /manufacturer:
+        description: (one) manufacturer of the widget
+        type:
+          col.relationshipItem:
+            dataType: wid.widgets_relationships_manufacturer
+            exampleItem: !include examples/WidgetRelationshipsManufacturerItemExample.raml
+        get:
+          is: [ cu.oauth_read_any, col.all-the-things ]
+        patch:
+          is: [ cu.oauth_update_any ]
 /locations:
   displayName: locations
   description: inventory locations

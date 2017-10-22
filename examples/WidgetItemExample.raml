@@ -17,6 +17,10 @@ value:
             id: "1235"
         links:
           self: /widgets/abc-123/relationships/locations
+      manufacturer:
+        data:
+          type: companies
+          id: "abc123"
   included:
     - type: locations
       id: "1234"
@@ -36,3 +40,9 @@ value:
         bin: "12"      
       links:
         self: /locations/1235
+    - type: companies
+      id: "abc123"
+      attributes:
+        name: "ACME Manufacturing, Inc."
+      links:
+        self: /companies/abc123

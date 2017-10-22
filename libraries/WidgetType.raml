@@ -30,6 +30,7 @@ types:
     # looks like inheritance is not multi-level. This is WET!
     properties:
       attributes:
+        required: false
         properties:
           name:
             required: true
@@ -59,6 +60,7 @@ types:
     type: api.resource_post
     properties:
       attributes:
+        required: false
         properties:
           name:
             required: false
@@ -70,7 +72,7 @@ types:
             minimum: 0
             description: quantity
       relationships:
-        type: WidgetRelationships
+        type: widgets_relationships
         required: false
     additionalProperties: false
     example:
@@ -83,16 +85,20 @@ types:
           data: 
             - type: locations
               id: "13"
-# TODO: add _patch version?
-  WidgetRelationships:
-    type: object
+  widgets_relationships:
+    type: api.relationships
     description: |
       A widget's relationships: 
-        - location
+        - locations: is the list of locations a widget is stored in inventory
+        - manufacturer: the manufacturer of the widget
     properties:
       locations:
         type: api.relationshipMember
-        description: locations in inventory (to-many)
+        description: locations in inventory for the widget
+        required: false
+      manufacturer:
+        type: api.relationshipMember
+        description: manufacturer
         required: false
     example:
       locations:
@@ -103,3 +109,40 @@ types:
             id: "15"
         links:
           self: /widgets/abc-123/relationships/locations
+      manufacturer: 
+        data: 
+          type: companies
+          id: "abc123"
+        links: 
+          self: /widgets/abc-123/relationships/manufacturer
+  # relationships have only type, id and links; no other attributes.
+  widgets_relationships_locations:
+    type: widgets_relationships_locations_post
+    properties:
+      id:
+        required: true
+  widgets_relationships_locations_post:
+    type: widgets_relationships_locations_patch
+  widgets_relationships_locations_patch:
+    type: api.resource_post
+    description: locations in inventory
+    example:
+      type: locations
+      id: "14"
+      links:
+        self: /widgets/abc-123/relationships/locations
+  widgets_relationships_manufacturer:
+    type: widgets_relationships_manufacturer_post
+    properties:
+      id:
+        required: true
+  widgets_relationships_manufacturer_post:
+    type: widgets_relationships_manufacturer_patch
+  widgets_relationships_manufacturer_patch:
+    type: api.resource_post
+    description: manufacturer
+    example:
+      type: companies
+      id: "abc123"
+      links:
+        self: /widgets/abc-123/relationships/manufacturer
