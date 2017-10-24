@@ -11,8 +11,8 @@ usage: >
   provide a *dataType*.
   
   The `relationshipCollection` is a special resourceType for _to-many_ `relationships` that allows GET, POST, PATCH & DELETE.
-  (Normal `collection`s don't allow PATCH or DELETE of the entire collection.) The `relationshipItem` is a special
-  resourceType for _to-one_ `relationships` that allows GET & PATCH.
+  (Normal `collection`s don't allow PATCH or DELETE of the entire collection and the meaning of DELETE for relationships
+  is quite different.) The `relationshipItem` is a special resourceType for _to-one_ `relationships` that allows GET & PATCH.
   
   **collection required parameters**:
   - dataType: the response RAML type (e.g. `mythings`). You must also define types named e.g. `mythings_post` and

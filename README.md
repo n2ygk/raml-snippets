@@ -78,6 +78,10 @@ regarding URL naming: a resourcePathName should be the same as it's type (both p
 we may be using RAML Libraries for those type definitions, one can't use *resourcePathName* but must still
 provide a *dataType*.
 
+The `relationshipCollection` is a special resourceType for _to-many_ `relationships` that allows GET, POST, PATCH & DELETE.
+(Normal `collection`s don't allow PATCH or DELETE of the entire collection and the meaning of DELETE for relationships
+is quite different.) The `relationshipItem` is a special resourceType for _to-one_ `relationships` that allows GET & PATCH.
+
 **collection required parameters**:
 - dataType: the response RAML type (e.g. `mythings`). You must also define types named e.g. `mythings_post` and
   `mythings_patch`. These are all subclasses of on another with various properties labeled as true. This deals
