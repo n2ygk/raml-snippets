@@ -12,6 +12,7 @@ usage: >
     - I couldn't represent allOf for `links` so made a `pagelinks` type which extends `link`.
     - Fix attributes and relationships types (patternProperties not directly mappable to RAML)
     - Move type: up for readability and changed type: array/items: into just type: itemtype[]
+    - Make linkage a subclass of resource rather than object.
   
   See the related jsonApiCollections.raml Library for useful resourceTypes and traits that uses these types.
   
@@ -223,7 +224,7 @@ types:
   empty:
     type: nil
   linkage:
-    type: object
+    type: resource
     additionalProperties: false
     properties:
       type:

@@ -214,6 +214,9 @@ resourceTypes:
                   - status: "409"
                     title: Conflict
     delete:
+      body: 
+        application/vnd.api+json:
+          type: api.relationshipToMany
       responses:
         200:
           description: Sucessfully deleted. Top-level meta-data response provided.
@@ -242,14 +245,18 @@ resourceTypes:
       description: Get a collection of <<resourcePathName>>.
       responses: 
         200:
-          description: Success. Response contains the primary data and optional metadata.
+          description: Success. Response contains the relationship linkage and optional metadata.
           body: 
             application/vnd.api+json:
               type: api.success
               properties: 
-                data: <<dataType>>[]
-              example: 
-                <<exampleCollection>>
+                data: api.relationshipToMany
+              example:
+                data: 
+                  - type: theType
+                    id: theId
+                  - type: anotherType
+                    id: anotherId
         404:
           description: Not found. Response contains a list of error(s).
           body:
@@ -264,7 +271,7 @@ resourceTypes:
       description: Create a new <<resourcePathName|!singularize>>.
       body: 
         application/vnd.api+json:
-          type: <<dataType>>_post
+          type: api.relationshipToMany
       responses:
         201:
           description: Created. Response contains the created <<resourcePathName|!singularize>>
@@ -275,8 +282,11 @@ resourceTypes:
             application/vnd.api+json:
               type: api.success
               properties: 
-                data: <<dataType>>
-              example: <<exampleItem>>
+                data: api.relationshipToOne
+              example: 
+                data: 
+                  type: theType
+                  id: theId
         202:
           description: Accepted for processing. Request has not yet completed.
         204:
@@ -311,7 +321,7 @@ resourceTypes:
       description: Update an existing <<resourcePath|!singularize>> relationship.
       body: 
         application/vnd.api+json:
-          type: <<dataType>>_patch
+          type: api.relationshipToMany
       responses:
         200:
           description: |
@@ -321,8 +331,11 @@ resourceTypes:
             application/vnd.api+json:
               type: api.success
               properties: 
-                data: <<dataType>>
-              example: <<exampleItem>>
+                data: api.relationshipToOne
+              example:
+                data: 
+                  type: theType
+                  id: theId
         202:
           description: Accepted for processing. Request has not yet completed.
         204:
@@ -363,9 +376,11 @@ resourceTypes:
             application/vnd.api+json:
               type: api.success
               properties: 
-                data: <<dataType>>
-              example: 
-                <<exampleItem>>
+                data: api.relationshipToOne
+              example:
+                data: 
+                  type: theType
+                  id: theId
         404:
           body:
             application/vnd.api+json:
@@ -379,7 +394,7 @@ resourceTypes:
       description: Update an existing <<resourcePath|!singularize>>.
       body: 
         application/vnd.api+json:
-          type: <<dataType>>_patch
+          type: api.relationshipToOne
       responses:
         200:
           description: |
@@ -389,8 +404,11 @@ resourceTypes:
             application/vnd.api+json:
               type: api.success
               properties: 
-                data: <<dataType>>
-              example: <<exampleItem>>
+                data: api.relationshipToOne
+              example:
+                data: 
+                  type: theType
+                  id: theId
         202:
           description: Accepted for processing. Request has not yet completed.
         204:
