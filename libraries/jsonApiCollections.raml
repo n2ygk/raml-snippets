@@ -96,7 +96,10 @@ resourceTypes:
       description: Create a new <<resourcePathName|!singularize>>.
       body: 
         application/vnd.api+json:
-          type: <<dataType>>_post
+          type: object # ??
+          properties:
+            data: <<dataType>>_post
+          additionalProperties: false
       responses:
         201:
           description: Created. Response contains the created <<resourcePathName|!singularize>>
@@ -171,7 +174,10 @@ resourceTypes:
       description: Update an existing <<resourcePath|!singularize>>.
       body: 
         application/vnd.api+json:
-          type: <<dataType>>_patch
+          type: object # ??
+          properties:
+            data: <<dataType>>_patch
+          additionalProperties: false
       responses:
         200:
           description: |
@@ -214,9 +220,7 @@ resourceTypes:
                   - status: "409"
                     title: Conflict
     delete:
-      body: 
-        application/vnd.api+json:
-          type: api.relationshipToMany
+      description: Delete an existing <<resourcePath|!singularize>>.
       responses:
         200:
           description: Sucessfully deleted. Top-level meta-data response provided.
@@ -268,10 +272,19 @@ resourceTypes:
                     title: Resource not found
                     detail: <<resourcePath>> not found 
     post:
-      description: Create a new <<resourcePathName|!singularize>>.
+      description: Add new relationships.
       body: 
         application/vnd.api+json:
-          type: api.relationshipToMany
+          type: api.relationshipMember
+          properties: 
+            data: api.relationshipToMany
+          additionalProperties: false
+          example: 
+            data: 
+              - type: theType
+                id: theId
+              - type: theType
+                id: anotherId
       responses:
         201:
           description: Created. Response contains the created <<resourcePathName|!singularize>>
@@ -282,11 +295,13 @@ resourceTypes:
             application/vnd.api+json:
               type: api.success
               properties: 
-                data: api.relationshipToOne
+                data: api.relationshipToMany
               example: 
                 data: 
-                  type: theType
-                  id: theId
+                  - type: theType
+                    id: theId
+                  - type: theType
+                    id: anotherId
         202:
           description: Accepted for processing. Request has not yet completed.
         204:
@@ -318,10 +333,21 @@ resourceTypes:
                   - status: "409"
                     title: Conflict
     patch:
-      description: Update an existing <<resourcePath|!singularize>> relationship.
+      description: >
+        Update one or more existing relationships. To delete all relationships
+        patch with an empty list: `{"data": []}`
       body: 
         application/vnd.api+json:
-          type: api.relationshipToMany
+          type: api.relationshipMember
+          properties: 
+            data: api.relationshipToMany
+          additionalProperties: false
+          example:
+            data:
+              - type: TheType
+                id: TheId
+              - type: AnotherType
+                id: AnotherId
       responses:
         200:
           description: |
@@ -331,11 +357,13 @@ resourceTypes:
             application/vnd.api+json:
               type: api.success
               properties: 
-                data: api.relationshipToOne
+                data: api.relationshipToMany
               example:
                 data: 
-                  type: theType
-                  id: theId
+                  - type: TheType
+                    id: TheId
+                  - type: AnotherType
+                    id: AnotherId
         202:
           description: Accepted for processing. Request has not yet completed.
         204:
@@ -359,6 +387,66 @@ resourceTypes:
           description: Failed to update a resource if that update would violate other server-enforced constraints
             (such as a uniqueness constraint on a property other than id).
             Or, the resource object’s type and id do not match the server’s endpoint.
+          body:
+            application/vnd.api+json:
+              type: api.failure
+              example:
+                errors:
+                  - status: "409"
+                    title: Conflict
+    delete:
+      description: Delete relationships. Provide a list of relationship identifiers to delete from the list of relationships.
+      body: 
+        application/vnd.api+json:
+          type: api.relationshipMember
+          properties: 
+            data: api.relationshipToMany
+          additionalProperties: false
+          example: 
+            data: 
+              - type: theType
+                id: theId
+              - type: theType
+                id: anotherId
+      responses:
+        200:
+          description: |
+            The DELETE was accepted and some values may have changed beyond those specified.
+            The response contains the result of those updates.
+          body: 
+            application/vnd.api+json:
+              type: api.success
+              properties: 
+                data: api.relationshipToMany
+              example: 
+                data: 
+                  - type: theType
+                    id: theId
+                  - type: theType
+                    id: anotherId
+        202:
+          description: Accepted for processing. Request has not yet completed.
+        204:
+          description: No Content.
+        403:
+          description: Forbidden
+          body:
+            application/vnd.api+json:
+              type: api.failure
+        404:
+          description: Related resource not found
+          body:
+            application/vnd.api+json:
+              type: api.failure
+              example:
+                errors:
+                  - status: "404"
+                    title: Resource not found
+                    detail: related resource not found 
+        409:
+          description: Failed to create a resource with a client-generated ID that already exists.
+            Or, the resource object’s type is not among the type(s) that constitute the collection represented by the endpoint.
+            Or, the update would violate other server-enforced constraints including type and id mismatch.
           body:
             application/vnd.api+json:
               type: api.failure
@@ -391,10 +479,18 @@ resourceTypes:
                     title: Resource not found
                     detail: <<resourcePath>> not found 
     patch:
-      description: Update an existing <<resourcePath|!singularize>>.
+      description: >
+        Update an existing relationship. To remove the relationship: patch `{"data": null}`
       body: 
         application/vnd.api+json:
-          type: api.relationshipToOne
+          type: api.relationshipMember
+          properties: 
+            data: api.relationshipToOne
+          additionalProperties: false
+          example:
+            data:
+              type: theType
+              id: theId
       responses:
         200:
           description: |
