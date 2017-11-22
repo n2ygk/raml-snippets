@@ -12,6 +12,7 @@ Some useful RAML 1.0 snippets.
   - [RAML 1.0 types instead of JSON Schemas](#raml-10-types-instead-of-json-schemas)
   - [Only way to get the metadata is via parsing RAML](#only-way-to-get-the-metadata-is-via-parsing-raml)
   - [RAML 1.0 types are not resolvable into schemas](#raml-10-types-are-not-resolvable-into-schemas)
+- [OAS 3.0 refactoring](#oas-30-refactoring)
 - [TO DO](#to-do)
 - [Author](#author)
 - [LICENSE](#license)
@@ -212,6 +213,10 @@ To mitigate this issue, each "user" type must actually be decalared as three typ
 - _mytype_: subclass of _mytype_\_post which makes `id` required.
 - _mytype_\_post: subclass of _mytype_\_patch which overrides required attributes and relationships.
 - _mytype_\_patch: base class which defines all attributes and relationships as optional.
+
+## OAS 3.0 refactoring
+
+See [OAS](OAS) for a start at refactoring from RAML 1.0 to OAS 3.0.
 
 ## TO DO
 

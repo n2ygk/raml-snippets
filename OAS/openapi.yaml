@@ -1,0 +1,11 @@
+openapi: '3.0.0'
+info:
+  title: demo api
+  description: a _demo_ api
+  version: v1
+servers:
+  - url: https://test-columbia-demo-jsonapi.cloudhub.io/{$info.version}/api
+    description: test server
+paths:
+  /items:
+    

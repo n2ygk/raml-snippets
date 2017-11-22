@@ -1,0 +1,3551 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "demo-jsonapi",
+    "version": "v1",
+    "description": "a sample RESTful API that conforms to jsonapi.org 1.0"
+  },
+  "servers": [
+    {
+      "url": "https://columbia-demo-jsonapi.cloudhub.io/{version}/api",
+      "variables": {
+        "version": {
+          "default": "version"
+        }
+      }
+    }
+  ],
+  "paths": {
+    "/widgets": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Success. Response contains the primary data and optional metadata.",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "example": {
+                    "links": {
+                      "self": "/widgets?filter[widgets.name]=can+opener,foo+bar"
+                    },
+                    "data": [
+                      {
+                        "type": "widgets",
+                        "id": "123",
+                        "attributes": {
+                          "name": "foo bar"
+                        },
+                        "relationships": {
+                          "locations": {
+                            "data": [
+                              {
+                                "type": "locations",
+                                "id": "1"
+                              }
+                            ],
+                            "links": {
+                              "self": "/widgets/123/relationships/locations"
+                            }
+                          },
+                          "manufacturer": {
+                            "data": {
+                              "type": "companies",
+                              "id": "aaa-122"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "type": "widgets",
+                        "id": "14",
+                        "attributes": {
+                          "name": "can opener",
+                          "qty": 47
+                        },
+                        "relationships": {
+                          "locations": {
+                            "data": [
+                              {
+                                "type": "locations",
+                                "id": "1234"
+                              },
+                              {
+                                "type": "locations",
+                                "id": "1235"
+                              }
+                            ],
+                            "links": {
+                              "self": "/widgets/14/relationships/locations"
+                            }
+                          },
+                          "manufacturer": {
+                            "data": {
+                              "type": "companies",
+                              "id": "abc123"
+                            },
+                            "links": {
+                              "self": "/widgets/14/relationships/manufacturer"
+                            }
+                          }
+                        }
+                      }
+                    ],
+                    "included": [
+                      {
+                        "type": "locations",
+                        "id": "1234",
+                        "attributes": {
+                          "warehouse": "Briarcliff Manor",
+                          "aisle": "45",
+                          "shelf": "33",
+                          "bin": "1"
+                        },
+                        "links": {
+                          "self": "/locations/1234"
+                        }
+                      },
+                      {
+                        "type": "locations",
+                        "id": "1235",
+                        "attributes": {
+                          "warehouse": "NYC",
+                          "aisle": "4",
+                          "shelf": "3",
+                          "bin": "12"
+                        },
+                        "links": {
+                          "self": "/locations/1235"
+                        }
+                      },
+                      {
+                        "type": "companies",
+                        "id": "abc123",
+                        "attributes": {
+                          "name": "ACME Manufacturing, Inc."
+                        },
+                        "links": {
+                          "self": "/companies/abc123"
+                        }
+                      }
+                    ]
+                  },
+                  "includePath": "libraries/jsonApiCollections.raml",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/api.success"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/wid.widgets"
+                          }
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/trait_cu.protected_401"
+          },
+          "403": {
+            "$ref": "#/components/responses/trait_cu.protected_403"
+          },
+          "404": {
+            "description": "Not found. Response contains a list of error(s).",
+            "content": {
+              "application/vnd.api+json": {
+                "example": {
+                  "errors": [
+                    {
+                      "status": "404",
+                      "title": "Resource not found",
+                      "detail": "/widgets not found"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/api.failure"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/trait_cu.protected_429"
+          }
+        },
+        "description": "Get a collection of widgets.",
+        "operationId": "GET_widgets",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/trait_col.pageable_page[number]"
+          },
+          {
+            "$ref": "#/components/parameters/trait_col.pageable_page[size]"
+          },
+          {
+            "$ref": "#/components/parameters/trait_col.pageable_page[offset]"
+          },
+          {
+            "$ref": "#/components/parameters/trait_col.pageable_page[limit]"
+          },
+          {
+            "$ref": "#/components/parameters/trait_col.pageable_page[cursor]"
+          },
+          {
+            "$ref": "#/components/parameters/trait_col.sortable_sort"
+          },
+          {
+            "$ref": "#/components/parameters/trait_col.sparse_fields[{type}]"
+          },
+          {
+            "$ref": "#/components/parameters/trait_col.filterable_filter[{attr}]"
+          },
+          {
+            "$ref": "#/components/parameters/trait_col.includable_include"
+          }
+        ],
+        "security": [
+          {
+            "cu.oauth_2_0": [
+              "read",
+              "auth-columbia"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "read",
+              "auth-facebook"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "read",
+              "auth-google"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "read",
+              "auth-none"
+            ]
+          }
+        ]
+      },
+      "post": {
+        "responses": {
+          "201": {
+            "description": "Created. Response contains the created widget Location header *may* contain the URI.",
+            "headers": {
+              "location": {
+                "required": false,
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "example": {
+                    "links": {
+                      "self": "/widgets/abc-123"
+                    },
+                    "data": {
+                      "type": "widgets",
+                      "id": "abc-123",
+                      "attributes": {
+                        "name": "can opener",
+                        "qty": 47
+                      },
+                      "relationships": {
+                        "locations": {
+                          "data": [
+                            {
+                              "type": "locations",
+                              "id": "1234"
+                            },
+                            {
+                              "type": "locations",
+                              "id": "1235"
+                            }
+                          ],
+                          "links": {
+                            "self": "/widgets/abc-123/relationships/locations"
+                          }
+                        },
+                        "manufacturer": {
+                          "data": {
+                            "type": "companies",
+                            "id": "abc123"
+                          }
+                        }
+                      }
+                    },
+                    "included": [
+                      {
+                        "type": "locations",
+                        "id": "1234",
+                        "attributes": {
+                          "warehouse": "Briarcliff Manor",
+                          "aisle": "45",
+                          "shelf": "33",
+                          "bin": "1"
+                        },
+                        "links": {
+                          "self": "/locations/1234"
+                        }
+                      },
+                      {
+                        "type": "locations",
+                        "id": "1235",
+                        "attributes": {
+                          "warehouse": "NYC",
+                          "aisle": "4",
+                          "shelf": "3",
+                          "bin": "12"
+                        },
+                        "links": {
+                          "self": "/locations/1235"
+                        }
+                      },
+                      {
+                        "type": "companies",
+                        "id": "abc123",
+                        "attributes": {
+                          "name": "ACME Manufacturing, Inc."
+                        },
+                        "links": {
+                          "self": "/companies/abc123"
+                        }
+                      }
+                    ]
+                  },
+                  "includePath": "libraries/jsonApiCollections.raml",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/api.success"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/wid.widgets"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Accepted for processing. Request has not yet completed."
+          },
+          "204": {
+            "description": "No Content."
+          },
+          "401": {
+            "$ref": "#/components/responses/trait_cu.protected_401"
+          },
+          "403": {
+            "$ref": "#/components/responses/trait_cu.protected_403"
+          },
+          "404": {
+            "description": "Related resource not found",
+            "content": {
+              "application/vnd.api+json": {
+                "example": {
+                  "errors": [
+                    {
+                      "status": "404",
+                      "title": "Resource not found",
+                      "detail": "related resource not found"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/api.failure"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Failed to create a resource with a client-generated ID that already exists. Or, the resource object’s type is not among the type(s) that constitute the collection represented by the endpoint. Or, the update would violate other server-enforced constraints including type and id mismatch.",
+            "content": {
+              "application/vnd.api+json": {
+                "example": {
+                  "errors": [
+                    {
+                      "status": "409",
+                      "title": "Conflict"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/api.failure"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/trait_cu.protected_429"
+          }
+        },
+        "description": "Create a new widget.",
+        "operationId": "POST_widgets",
+        "requestBody": {
+          "content": {
+            "application/vnd.api+json": {
+              "schema": {
+                "includePath": "libraries/jsonApiCollections.raml",
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "data": {
+                    "$ref": "#/components/schemas/wid.widgets_post"
+                  }
+                },
+                "required": [
+                  "data"
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "cu.oauth_2_0": [
+              "auth-columbia",
+              "create"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "auth-facebook",
+              "create"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "auth-google",
+              "create"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "auth-none",
+              "create"
+            ]
+          }
+        ]
+      }
+    },
+    "/widgets/{id}": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Success. Response contains the primary data and optional metadata.",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "example": {
+                    "links": {
+                      "self": "/widgets/abc-123"
+                    },
+                    "data": {
+                      "type": "widgets",
+                      "id": "abc-123",
+                      "attributes": {
+                        "name": "can opener",
+                        "qty": 47
+                      },
+                      "relationships": {
+                        "locations": {
+                          "data": [
+                            {
+                              "type": "locations",
+                              "id": "1234"
+                            },
+                            {
+                              "type": "locations",
+                              "id": "1235"
+                            }
+                          ],
+                          "links": {
+                            "self": "/widgets/abc-123/relationships/locations"
+                          }
+                        },
+                        "manufacturer": {
+                          "data": {
+                            "type": "companies",
+                            "id": "abc123"
+                          }
+                        }
+                      }
+                    },
+                    "included": [
+                      {
+                        "type": "locations",
+                        "id": "1234",
+                        "attributes": {
+                          "warehouse": "Briarcliff Manor",
+                          "aisle": "45",
+                          "shelf": "33",
+                          "bin": "1"
+                        },
+                        "links": {
+                          "self": "/locations/1234"
+                        }
+                      },
+                      {
+                        "type": "locations",
+                        "id": "1235",
+                        "attributes": {
+                          "warehouse": "NYC",
+                          "aisle": "4",
+                          "shelf": "3",
+                          "bin": "12"
+                        },
+                        "links": {
+                          "self": "/locations/1235"
+                        }
+                      },
+                      {
+                        "type": "companies",
+                        "id": "abc123",
+                        "attributes": {
+                          "name": "ACME Manufacturing, Inc."
+                        },
+                        "links": {
+                          "self": "/companies/abc123"
+                        }
+                      }
+                    ]
+                  },
+                  "includePath": "libraries/jsonApiCollections.raml",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/api.success"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/wid.widgets"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/trait_cu.protected_401"
+          },
+          "403": {
+            "$ref": "#/components/responses/trait_cu.protected_403"
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/vnd.api+json": {
+                "example": {
+                  "errors": [
+                    {
+                      "status": "404",
+                      "title": "Resource not found",
+                      "detail": "/widgets/{id} not found"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/api.failure"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/trait_cu.protected_429"
+          }
+        },
+        "description": "Collection response has [sparse fieldsets](http://jsonapi.org/format/#fetching-sparse-fieldsets).\n",
+        "operationId": "GET_widgets-id",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/trait_col.sparse_fields[{type}]"
+          }
+        ],
+        "security": [
+          {
+            "cu.oauth_2_0": [
+              "read",
+              "auth-columbia"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "read",
+              "auth-facebook"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "read",
+              "auth-google"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "read",
+              "auth-none"
+            ]
+          }
+        ]
+      },
+      "patch": {
+        "responses": {
+          "200": {
+            "description": "The PATCH was accepted and some values may have changed beyond those specified.\nThe response contains the result of those updates.\n",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "example": {
+                    "links": {
+                      "self": "/widgets/abc-123"
+                    },
+                    "data": {
+                      "type": "widgets",
+                      "id": "abc-123",
+                      "attributes": {
+                        "name": "can opener",
+                        "qty": 47
+                      },
+                      "relationships": {
+                        "locations": {
+                          "data": [
+                            {
+                              "type": "locations",
+                              "id": "1234"
+                            },
+                            {
+                              "type": "locations",
+                              "id": "1235"
+                            }
+                          ],
+                          "links": {
+                            "self": "/widgets/abc-123/relationships/locations"
+                          }
+                        },
+                        "manufacturer": {
+                          "data": {
+                            "type": "companies",
+                            "id": "abc123"
+                          }
+                        }
+                      }
+                    },
+                    "included": [
+                      {
+                        "type": "locations",
+                        "id": "1234",
+                        "attributes": {
+                          "warehouse": "Briarcliff Manor",
+                          "aisle": "45",
+                          "shelf": "33",
+                          "bin": "1"
+                        },
+                        "links": {
+                          "self": "/locations/1234"
+                        }
+                      },
+                      {
+                        "type": "locations",
+                        "id": "1235",
+                        "attributes": {
+                          "warehouse": "NYC",
+                          "aisle": "4",
+                          "shelf": "3",
+                          "bin": "12"
+                        },
+                        "links": {
+                          "self": "/locations/1235"
+                        }
+                      },
+                      {
+                        "type": "companies",
+                        "id": "abc123",
+                        "attributes": {
+                          "name": "ACME Manufacturing, Inc."
+                        },
+                        "links": {
+                          "self": "/companies/abc123"
+                        }
+                      }
+                    ]
+                  },
+                  "includePath": "libraries/jsonApiCollections.raml",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/api.success"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/wid.widgets"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Accepted for processing. Request has not yet completed."
+          },
+          "204": {
+            "description": "No Content. Only those changes submitted have been applied."
+          },
+          "401": {
+            "$ref": "#/components/responses/trait_cu.protected_401"
+          },
+          "403": {
+            "$ref": "#/components/responses/trait_cu.protected_403"
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/vnd.api+json": {
+                "example": {
+                  "errors": [
+                    {
+                      "status": "404",
+                      "title": "Resource not found",
+                      "detail": "/widgets/{id} not found"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/api.failure"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Failed to update a resource if that update would violate other server-enforced constraints (such as a uniqueness constraint on a property other than id). Or, the resource object’s type and id do not match the server’s endpoint.",
+            "content": {
+              "application/vnd.api+json": {
+                "example": {
+                  "errors": [
+                    {
+                      "status": "409",
+                      "title": "Conflict"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/api.failure"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/trait_cu.protected_429"
+          }
+        },
+        "description": "Update an existing /widgets/{id}.",
+        "operationId": "PATCH_widgets-id",
+        "requestBody": {
+          "content": {
+            "application/vnd.api+json": {
+              "schema": {
+                "includePath": "libraries/jsonApiCollections.raml",
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "data": {
+                    "$ref": "#/components/schemas/wid.widgets_patch"
+                  }
+                },
+                "required": [
+                  "data"
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "cu.oauth_2_0": [
+              "auth-columbia",
+              "update"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "auth-facebook",
+              "update"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "auth-google",
+              "update"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "auth-none",
+              "update"
+            ]
+          }
+        ]
+      },
+      "delete": {
+        "responses": {
+          "200": {
+            "description": "Sucessfully deleted. Top-level meta-data response provided.",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/api.info"
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Accepted for processing. Request has not yet completed."
+          },
+          "204": {
+            "description": "Sucessfully deleted. No content returned."
+          },
+          "401": {
+            "$ref": "#/components/responses/trait_cu.protected_401"
+          },
+          "403": {
+            "$ref": "#/components/responses/trait_cu.protected_403"
+          },
+          "404": {
+            "description": "Not found.",
+            "content": {
+              "application/vnd.api+json": {
+                "example": {
+                  "errors": [
+                    {
+                      "status": "404",
+                      "title": "Resource not found",
+                      "detail": "/widgets/{id} not found"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/api.failure"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/trait_cu.protected_429"
+          }
+        },
+        "description": "Delete an existing /widgets/{id}.",
+        "operationId": "DELETE_widgets-id",
+        "security": [
+          {
+            "cu.oauth_2_0": [
+              "auth-columbia",
+              "delete"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "auth-facebook",
+              "delete"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "auth-google",
+              "delete"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "auth-none",
+              "delete"
+            ]
+          }
+        ]
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ]
+    },
+    "/widgets/{id}/relationships/locations": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Success. Response contains the relationship linkage and optional metadata.",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "example": {
+                    "data": [
+                      {
+                        "type": "theType",
+                        "id": "theId"
+                      },
+                      {
+                        "type": "anotherType",
+                        "id": "anotherId"
+                      }
+                    ]
+                  },
+                  "includePath": "libraries/jsonApiCollections.raml",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/api.success"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/api.relationshipToMany"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/trait_cu.protected_401"
+          },
+          "403": {
+            "$ref": "#/components/responses/trait_cu.protected_403"
+          },
+          "404": {
+            "description": "Not found. Response contains a list of error(s).",
+            "content": {
+              "application/vnd.api+json": {
+                "example": {
+                  "errors": [
+                    {
+                      "status": "404",
+                      "title": "Resource not found",
+                      "detail": "/widgets/{id}/relationships/locations not found"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/api.failure"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/trait_cu.protected_429"
+          }
+        },
+        "description": "Get a collection of locations.",
+        "operationId": "GET_widgets-id-relationships-locations",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/trait_col.pageable_page[number]"
+          },
+          {
+            "$ref": "#/components/parameters/trait_col.pageable_page[size]"
+          },
+          {
+            "$ref": "#/components/parameters/trait_col.pageable_page[offset]"
+          },
+          {
+            "$ref": "#/components/parameters/trait_col.pageable_page[limit]"
+          },
+          {
+            "$ref": "#/components/parameters/trait_col.pageable_page[cursor]"
+          },
+          {
+            "$ref": "#/components/parameters/trait_col.sortable_sort"
+          },
+          {
+            "$ref": "#/components/parameters/trait_col.sparse_fields[{type}]"
+          },
+          {
+            "$ref": "#/components/parameters/trait_col.filterable_filter[{attr}]"
+          },
+          {
+            "$ref": "#/components/parameters/trait_col.includable_include"
+          }
+        ],
+        "security": [
+          {
+            "cu.oauth_2_0": [
+              "read",
+              "auth-columbia"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "read",
+              "auth-facebook"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "read",
+              "auth-google"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "read",
+              "auth-none"
+            ]
+          }
+        ]
+      },
+      "post": {
+        "responses": {
+          "201": {
+            "description": "Created. Response contains the created location Location header *may* contain the URI.",
+            "headers": {
+              "location": {
+                "required": false,
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "example": {
+                    "data": [
+                      {
+                        "type": "theType",
+                        "id": "theId"
+                      },
+                      {
+                        "type": "theType",
+                        "id": "anotherId"
+                      }
+                    ]
+                  },
+                  "includePath": "libraries/jsonApiCollections.raml",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/api.success"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/api.relationshipToMany"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Accepted for processing. Request has not yet completed."
+          },
+          "204": {
+            "description": "No Content."
+          },
+          "401": {
+            "$ref": "#/components/responses/trait_cu.protected_401"
+          },
+          "403": {
+            "$ref": "#/components/responses/trait_cu.protected_403"
+          },
+          "404": {
+            "description": "Related resource not found",
+            "content": {
+              "application/vnd.api+json": {
+                "example": {
+                  "errors": [
+                    {
+                      "status": "404",
+                      "title": "Resource not found",
+                      "detail": "related resource not found"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/api.failure"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Failed to create a resource with a client-generated ID that already exists. Or, the resource object’s type is not among the type(s) that constitute the collection represented by the endpoint. Or, the update would violate other server-enforced constraints including type and id mismatch.",
+            "content": {
+              "application/vnd.api+json": {
+                "example": {
+                  "errors": [
+                    {
+                      "status": "409",
+                      "title": "Conflict"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/api.failure"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/trait_cu.protected_429"
+          }
+        },
+        "description": "Add new relationships.",
+        "operationId": "POST_widgets-id-relationships-locations",
+        "requestBody": {
+          "content": {
+            "application/vnd.api+json": {
+              "example": {
+                "data": [
+                  {
+                    "type": "theType",
+                    "id": "theId"
+                  },
+                  {
+                    "type": "theType",
+                    "id": "anotherId"
+                  }
+                ]
+              },
+              "schema": {
+                "includePath": "libraries/jsonApiCollections.raml",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/api.relationshipMember"
+                  },
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "data": {
+                        "$ref": "#/components/schemas/api.relationshipToMany"
+                      }
+                    },
+                    "type": "object"
+                  }
+                ],
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "cu.oauth_2_0": [
+              "auth-columbia",
+              "create"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "auth-facebook",
+              "create"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "auth-google",
+              "create"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "auth-none",
+              "create"
+            ]
+          }
+        ]
+      },
+      "patch": {
+        "responses": {
+          "200": {
+            "description": "The PATCH was accepted and some values may have changed beyond those specified.\nThe response contains the result of those updates.\n",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "example": {
+                    "data": [
+                      {
+                        "type": "TheType",
+                        "id": "TheId"
+                      },
+                      {
+                        "type": "AnotherType",
+                        "id": "AnotherId"
+                      }
+                    ]
+                  },
+                  "includePath": "libraries/jsonApiCollections.raml",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/api.success"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/api.relationshipToMany"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Accepted for processing. Request has not yet completed."
+          },
+          "204": {
+            "description": "No Content. Only those changes submitted have been applied."
+          },
+          "401": {
+            "$ref": "#/components/responses/trait_cu.protected_401"
+          },
+          "403": {
+            "$ref": "#/components/responses/trait_cu.protected_403"
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/vnd.api+json": {
+                "example": {
+                  "errors": [
+                    {
+                      "status": "404",
+                      "title": "Resource not found",
+                      "detail": "/widgets/{id}/relationships/locations not found"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/api.failure"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Failed to update a resource if that update would violate other server-enforced constraints (such as a uniqueness constraint on a property other than id). Or, the resource object’s type and id do not match the server’s endpoint.",
+            "content": {
+              "application/vnd.api+json": {
+                "example": {
+                  "errors": [
+                    {
+                      "status": "409",
+                      "title": "Conflict"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/api.failure"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/trait_cu.protected_429"
+          }
+        },
+        "description": "Update one or more existing relationships. To delete all relationships patch with an empty list: `{\"data\": []}`\n",
+        "operationId": "PATCH_widgets-id-relationships-locations",
+        "requestBody": {
+          "content": {
+            "application/vnd.api+json": {
+              "example": {
+                "data": [
+                  {
+                    "type": "TheType",
+                    "id": "TheId"
+                  },
+                  {
+                    "type": "AnotherType",
+                    "id": "AnotherId"
+                  }
+                ]
+              },
+              "schema": {
+                "includePath": "libraries/jsonApiCollections.raml",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/api.relationshipMember"
+                  },
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "data": {
+                        "$ref": "#/components/schemas/api.relationshipToMany"
+                      }
+                    },
+                    "type": "object"
+                  }
+                ],
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "cu.oauth_2_0": [
+              "auth-columbia",
+              "update"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "auth-facebook",
+              "update"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "auth-google",
+              "update"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "auth-none",
+              "update"
+            ]
+          }
+        ]
+      },
+      "delete": {
+        "responses": {
+          "200": {
+            "description": "The DELETE was accepted and some values may have changed beyond those specified.\nThe response contains the result of those updates.\n",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "example": {
+                    "data": [
+                      {
+                        "type": "theType",
+                        "id": "theId"
+                      },
+                      {
+                        "type": "theType",
+                        "id": "anotherId"
+                      }
+                    ]
+                  },
+                  "includePath": "libraries/jsonApiCollections.raml",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/api.success"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/api.relationshipToMany"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Accepted for processing. Request has not yet completed."
+          },
+          "204": {
+            "description": "No Content."
+          },
+          "401": {
+            "$ref": "#/components/responses/trait_cu.protected_401"
+          },
+          "403": {
+            "$ref": "#/components/responses/trait_cu.protected_403"
+          },
+          "404": {
+            "description": "Related resource not found",
+            "content": {
+              "application/vnd.api+json": {
+                "example": {
+                  "errors": [
+                    {
+                      "status": "404",
+                      "title": "Resource not found",
+                      "detail": "related resource not found"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/api.failure"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Failed to create a resource with a client-generated ID that already exists. Or, the resource object’s type is not among the type(s) that constitute the collection represented by the endpoint. Or, the update would violate other server-enforced constraints including type and id mismatch.",
+            "content": {
+              "application/vnd.api+json": {
+                "example": {
+                  "errors": [
+                    {
+                      "status": "409",
+                      "title": "Conflict"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/api.failure"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/trait_cu.protected_429"
+          }
+        },
+        "description": "Delete relationships. Provide a list of relationship identifiers to delete from the list of relationships.",
+        "operationId": "DELETE_widgets-id-relationships-locations",
+        "requestBody": {
+          "content": {
+            "application/vnd.api+json": {
+              "example": {
+                "data": [
+                  {
+                    "type": "theType",
+                    "id": "theId"
+                  },
+                  {
+                    "type": "theType",
+                    "id": "anotherId"
+                  }
+                ]
+              },
+              "schema": {
+                "includePath": "libraries/jsonApiCollections.raml",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/api.relationshipMember"
+                  },
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "data": {
+                        "$ref": "#/components/schemas/api.relationshipToMany"
+                      }
+                    },
+                    "type": "object"
+                  }
+                ],
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "cu.oauth_2_0": [
+              "auth-columbia",
+              "delete"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "auth-facebook",
+              "delete"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "auth-google",
+              "delete"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "auth-none",
+              "delete"
+            ]
+          }
+        ]
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ]
+    },
+    "/widgets/{id}/relationships/manufacturer": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Success. Response contains the primary data and optional metadata.",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "example": {
+                    "data": {
+                      "type": "theType",
+                      "id": "theId"
+                    }
+                  },
+                  "includePath": "libraries/jsonApiCollections.raml",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/api.success"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/api.relationshipToOne"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/trait_cu.protected_401"
+          },
+          "403": {
+            "$ref": "#/components/responses/trait_cu.protected_403"
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/vnd.api+json": {
+                "example": {
+                  "errors": [
+                    {
+                      "status": "404",
+                      "title": "Resource not found",
+                      "detail": "/widgets/{id}/relationships/manufacturer not found"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/api.failure"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/trait_cu.protected_429"
+          }
+        },
+        "description": "All the collection queryParameter traits: pageable, sortable, sparse, filterable\n",
+        "operationId": "GET_widgets-id-relationships-manufacturer",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/trait_col.pageable_page[number]"
+          },
+          {
+            "$ref": "#/components/parameters/trait_col.pageable_page[size]"
+          },
+          {
+            "$ref": "#/components/parameters/trait_col.pageable_page[offset]"
+          },
+          {
+            "$ref": "#/components/parameters/trait_col.pageable_page[limit]"
+          },
+          {
+            "$ref": "#/components/parameters/trait_col.pageable_page[cursor]"
+          },
+          {
+            "$ref": "#/components/parameters/trait_col.sortable_sort"
+          },
+          {
+            "$ref": "#/components/parameters/trait_col.sparse_fields[{type}]"
+          },
+          {
+            "$ref": "#/components/parameters/trait_col.filterable_filter[{attr}]"
+          },
+          {
+            "$ref": "#/components/parameters/trait_col.includable_include"
+          }
+        ],
+        "security": [
+          {
+            "cu.oauth_2_0": [
+              "read",
+              "auth-columbia"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "read",
+              "auth-facebook"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "read",
+              "auth-google"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "read",
+              "auth-none"
+            ]
+          }
+        ]
+      },
+      "patch": {
+        "responses": {
+          "200": {
+            "description": "The PATCH was accepted and some values may have changed beyond those specified.\nThe response contains the result of those updates.\n",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "example": {
+                    "data": {
+                      "type": "theType",
+                      "id": "theId"
+                    }
+                  },
+                  "includePath": "libraries/jsonApiCollections.raml",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/api.success"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/api.relationshipToOne"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Accepted for processing. Request has not yet completed."
+          },
+          "204": {
+            "description": "No Content. Only those changes submitted have been applied."
+          },
+          "401": {
+            "$ref": "#/components/responses/trait_cu.protected_401"
+          },
+          "403": {
+            "$ref": "#/components/responses/trait_cu.protected_403"
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/vnd.api+json": {
+                "example": {
+                  "errors": [
+                    {
+                      "status": "404",
+                      "title": "Resource not found",
+                      "detail": "/widgets/{id}/relationships/manufacturer not found"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/api.failure"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Failed to update a resource if that update would violate other server-enforced constraints (such as a uniqueness constraint on a property other than id). Or, the resource object’s type and id do not match the server’s endpoint.",
+            "content": {
+              "application/vnd.api+json": {
+                "example": {
+                  "errors": [
+                    {
+                      "status": "409",
+                      "title": "Conflict"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/api.failure"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/trait_cu.protected_429"
+          }
+        },
+        "description": "Update an existing relationship. To remove the relationship: patch `{\"data\": null}`\n",
+        "operationId": "PATCH_widgets-id-relationships-manufacturer",
+        "requestBody": {
+          "content": {
+            "application/vnd.api+json": {
+              "example": {
+                "data": {
+                  "type": "theType",
+                  "id": "theId"
+                }
+              },
+              "schema": {
+                "includePath": "libraries/jsonApiCollections.raml",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/api.relationshipMember"
+                  },
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "data": {
+                        "$ref": "#/components/schemas/api.relationshipToOne"
+                      }
+                    },
+                    "type": "object"
+                  }
+                ],
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "cu.oauth_2_0": [
+              "auth-columbia",
+              "update"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "auth-facebook",
+              "update"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "auth-google",
+              "update"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "auth-none",
+              "update"
+            ]
+          }
+        ]
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ]
+    },
+    "/locations": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Success. Response contains the primary data and optional metadata.",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "example": {
+                    "links": {
+                      "self": "/locations?filter[warehouse]=Briarcliff+Manor,NYC"
+                    },
+                    "data": [
+                      {
+                        "type": "locations",
+                        "id": "123",
+                        "attributes": {
+                          "warehouse": "Briarcliff Manor",
+                          "aisle": "45",
+                          "shelf": "33",
+                          "bin": "1"
+                        }
+                      },
+                      {
+                        "type": "locations",
+                        "id": "12",
+                        "attributes": {
+                          "warehouse": "NYC",
+                          "aisle": "1",
+                          "shelf": "2",
+                          "bin": "3"
+                        }
+                      }
+                    ]
+                  },
+                  "includePath": "libraries/jsonApiCollections.raml",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/api.success"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/loc.locations"
+                          }
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/trait_cu.protected_401"
+          },
+          "403": {
+            "$ref": "#/components/responses/trait_cu.protected_403"
+          },
+          "404": {
+            "description": "Not found. Response contains a list of error(s).",
+            "content": {
+              "application/vnd.api+json": {
+                "example": {
+                  "errors": [
+                    {
+                      "status": "404",
+                      "title": "Resource not found",
+                      "detail": "/locations not found"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/api.failure"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/trait_cu.protected_429"
+          }
+        },
+        "description": "Get a collection of locations.",
+        "operationId": "GET_locations",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/trait_col.pageable_page[number]"
+          },
+          {
+            "$ref": "#/components/parameters/trait_col.pageable_page[size]"
+          },
+          {
+            "$ref": "#/components/parameters/trait_col.pageable_page[offset]"
+          },
+          {
+            "$ref": "#/components/parameters/trait_col.pageable_page[limit]"
+          },
+          {
+            "$ref": "#/components/parameters/trait_col.pageable_page[cursor]"
+          },
+          {
+            "$ref": "#/components/parameters/trait_col.sortable_sort"
+          },
+          {
+            "$ref": "#/components/parameters/trait_col.sparse_fields[{type}]"
+          },
+          {
+            "$ref": "#/components/parameters/trait_col.filterable_filter[{attr}]"
+          },
+          {
+            "$ref": "#/components/parameters/trait_col.includable_include"
+          }
+        ],
+        "security": [
+          {
+            "cu.oauth_2_0": [
+              "read",
+              "auth-columbia"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "read",
+              "auth-facebook"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "read",
+              "auth-google"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "read",
+              "auth-none"
+            ]
+          }
+        ]
+      },
+      "post": {
+        "responses": {
+          "201": {
+            "description": "Created. Response contains the created location Location header *may* contain the URI.",
+            "headers": {
+              "location": {
+                "required": false,
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "example": {
+                    "links": {
+                      "self": "/locations/123"
+                    },
+                    "data": {
+                      "type": "locations",
+                      "id": "123",
+                      "attributes": {
+                        "warehouse": "Briarcliff Manor",
+                        "aisle": "45",
+                        "shelf": "33",
+                        "bin": "1"
+                      }
+                    }
+                  },
+                  "includePath": "libraries/jsonApiCollections.raml",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/api.success"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/loc.locations"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Accepted for processing. Request has not yet completed."
+          },
+          "204": {
+            "description": "No Content."
+          },
+          "401": {
+            "$ref": "#/components/responses/trait_cu.protected_401"
+          },
+          "403": {
+            "$ref": "#/components/responses/trait_cu.protected_403"
+          },
+          "404": {
+            "description": "Related resource not found",
+            "content": {
+              "application/vnd.api+json": {
+                "example": {
+                  "errors": [
+                    {
+                      "status": "404",
+                      "title": "Resource not found",
+                      "detail": "related resource not found"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/api.failure"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Failed to create a resource with a client-generated ID that already exists. Or, the resource object’s type is not among the type(s) that constitute the collection represented by the endpoint. Or, the update would violate other server-enforced constraints including type and id mismatch.",
+            "content": {
+              "application/vnd.api+json": {
+                "example": {
+                  "errors": [
+                    {
+                      "status": "409",
+                      "title": "Conflict"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/api.failure"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/trait_cu.protected_429"
+          }
+        },
+        "description": "Create a new location.",
+        "operationId": "POST_locations",
+        "requestBody": {
+          "content": {
+            "application/vnd.api+json": {
+              "schema": {
+                "includePath": "libraries/jsonApiCollections.raml",
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "data": {
+                    "$ref": "#/components/schemas/loc.locations_post"
+                  }
+                },
+                "required": [
+                  "data"
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "cu.oauth_2_0": [
+              "auth-columbia",
+              "create"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "auth-facebook",
+              "create"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "auth-google",
+              "create"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "auth-none",
+              "create"
+            ]
+          }
+        ]
+      }
+    },
+    "/locations/{id}": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Success. Response contains the primary data and optional metadata.",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "example": {
+                    "links": {
+                      "self": "/locations/123"
+                    },
+                    "data": {
+                      "type": "locations",
+                      "id": "123",
+                      "attributes": {
+                        "warehouse": "Briarcliff Manor",
+                        "aisle": "45",
+                        "shelf": "33",
+                        "bin": "1"
+                      }
+                    }
+                  },
+                  "includePath": "libraries/jsonApiCollections.raml",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/api.success"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/loc.locations"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/trait_cu.protected_401"
+          },
+          "403": {
+            "$ref": "#/components/responses/trait_cu.protected_403"
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/vnd.api+json": {
+                "example": {
+                  "errors": [
+                    {
+                      "status": "404",
+                      "title": "Resource not found",
+                      "detail": "/locations/{id} not found"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/api.failure"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/trait_cu.protected_429"
+          }
+        },
+        "description": "Collection response has [sparse fieldsets](http://jsonapi.org/format/#fetching-sparse-fieldsets).\n",
+        "operationId": "GET_locations-id",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/trait_col.sparse_fields[{type}]"
+          }
+        ],
+        "security": [
+          {
+            "cu.oauth_2_0": [
+              "read",
+              "auth-columbia"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "read",
+              "auth-facebook"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "read",
+              "auth-google"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "read",
+              "auth-none"
+            ]
+          }
+        ]
+      },
+      "patch": {
+        "responses": {
+          "200": {
+            "description": "The PATCH was accepted and some values may have changed beyond those specified.\nThe response contains the result of those updates.\n",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "example": {
+                    "links": {
+                      "self": "/locations/123"
+                    },
+                    "data": {
+                      "type": "locations",
+                      "id": "123",
+                      "attributes": {
+                        "warehouse": "Briarcliff Manor",
+                        "aisle": "45",
+                        "shelf": "33",
+                        "bin": "1"
+                      }
+                    }
+                  },
+                  "includePath": "libraries/jsonApiCollections.raml",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/api.success"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/loc.locations"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Accepted for processing. Request has not yet completed."
+          },
+          "204": {
+            "description": "No Content. Only those changes submitted have been applied."
+          },
+          "401": {
+            "$ref": "#/components/responses/trait_cu.protected_401"
+          },
+          "403": {
+            "$ref": "#/components/responses/trait_cu.protected_403"
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/vnd.api+json": {
+                "example": {
+                  "errors": [
+                    {
+                      "status": "404",
+                      "title": "Resource not found",
+                      "detail": "/locations/{id} not found"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/api.failure"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Failed to update a resource if that update would violate other server-enforced constraints (such as a uniqueness constraint on a property other than id). Or, the resource object’s type and id do not match the server’s endpoint.",
+            "content": {
+              "application/vnd.api+json": {
+                "example": {
+                  "errors": [
+                    {
+                      "status": "409",
+                      "title": "Conflict"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/api.failure"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/trait_cu.protected_429"
+          }
+        },
+        "description": "Update an existing /locations/{id}.",
+        "operationId": "PATCH_locations-id",
+        "requestBody": {
+          "content": {
+            "application/vnd.api+json": {
+              "schema": {
+                "includePath": "libraries/jsonApiCollections.raml",
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "data": {
+                    "$ref": "#/components/schemas/loc.locations_patch"
+                  }
+                },
+                "required": [
+                  "data"
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "cu.oauth_2_0": [
+              "auth-columbia",
+              "update"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "auth-facebook",
+              "update"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "auth-google",
+              "update"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "auth-none",
+              "update"
+            ]
+          }
+        ]
+      },
+      "delete": {
+        "responses": {
+          "200": {
+            "description": "Sucessfully deleted. Top-level meta-data response provided.",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/api.info"
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Accepted for processing. Request has not yet completed."
+          },
+          "204": {
+            "description": "Sucessfully deleted. No content returned."
+          },
+          "401": {
+            "$ref": "#/components/responses/trait_cu.protected_401"
+          },
+          "403": {
+            "$ref": "#/components/responses/trait_cu.protected_403"
+          },
+          "404": {
+            "description": "Not found.",
+            "content": {
+              "application/vnd.api+json": {
+                "example": {
+                  "errors": [
+                    {
+                      "status": "404",
+                      "title": "Resource not found",
+                      "detail": "/locations/{id} not found"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/api.failure"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/trait_cu.protected_429"
+          }
+        },
+        "description": "Delete an existing /locations/{id}.",
+        "operationId": "DELETE_locations-id",
+        "security": [
+          {
+            "cu.oauth_2_0": [
+              "auth-columbia",
+              "delete"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "auth-facebook",
+              "delete"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "auth-google",
+              "delete"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "auth-none",
+              "delete"
+            ]
+          }
+        ]
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ]
+    },
+    "/objects": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Success. Response contains the primary data and optional metadata.",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "example": {
+                    "links": {
+                      "self": "/objects/123"
+                    },
+                    "data": [
+                      {
+                        "type": "objects",
+                        "id": "123",
+                        "attributes": {
+                          "value": "abc123"
+                        }
+                      },
+                      {
+                        "type": "objects",
+                        "id": "1234",
+                        "attributes": {
+                          "value": "abc1234"
+                        }
+                      }
+                    ]
+                  },
+                  "includePath": "libraries/jsonApiCollections.raml",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/api.success"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/obj.objects"
+                          }
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/trait_cu.protected_401"
+          },
+          "403": {
+            "$ref": "#/components/responses/trait_cu.protected_403"
+          },
+          "404": {
+            "description": "Not found. Response contains a list of error(s).",
+            "content": {
+              "application/vnd.api+json": {
+                "example": {
+                  "errors": [
+                    {
+                      "status": "404",
+                      "title": "Resource not found",
+                      "detail": "/objects not found"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/api.failure"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/trait_cu.protected_429"
+          }
+        },
+        "description": "Get a collection of objects.",
+        "operationId": "GET_objects",
+        "security": [
+          {
+            "cu.oauth_2_0": [
+              "read",
+              "auth-columbia"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "read",
+              "auth-facebook"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "read",
+              "auth-google"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "read",
+              "auth-none"
+            ]
+          }
+        ]
+      },
+      "delete": {
+        "responses": {
+          "204": {
+            "description": "Sucessfully deleted. No content returned."
+          },
+          "401": {
+            "$ref": "#/components/responses/trait_cu.protected_401"
+          },
+          "403": {
+            "$ref": "#/components/responses/trait_cu.protected_403"
+          },
+          "429": {
+            "$ref": "#/components/responses/trait_cu.protected_429"
+          }
+        },
+        "description": "DELETES the entire object store",
+        "operationId": "DELETE_objects",
+        "security": [
+          {
+            "cu.oauth_2_0": [
+              "auth-columbia",
+              "delete"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "auth-facebook",
+              "delete"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "auth-google",
+              "delete"
+            ]
+          },
+          {
+            "cu.oauth_2_0": [
+              "auth-none",
+              "delete"
+            ]
+          }
+        ]
+      },
+      "post": {
+        "responses": {
+          "201": {
+            "description": "Created. Response contains the created object Location header *may* contain the URI.",
+            "headers": {
+              "location": {
+                "required": false,
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "example": {
+                    "links": {
+                      "self": "/objects/123"
+                    },
+                    "data": {
+                      "type": "objects",
+                      "id": "123",
+                      "attributes": {
+                        "value": "abc123"
+                      }
+                    }
+                  },
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/api.success"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/obj.objects"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Accepted for processing. Request has not yet completed."
+          },
+          "204": {
+            "description": "No Content."
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/api.failure"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Related resource not found",
+            "content": {
+              "application/vnd.api+json": {
+                "example": {
+                  "errors": [
+                    {
+                      "status": "404",
+                      "title": "Resource not found",
+                      "detail": "related resource not found"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/api.failure"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Failed to create a resource with a client-generated ID that already exists. Or, the resource object’s type is not among the type(s) that constitute the collection represented by the endpoint. Or, the update would violate other server-enforced constraints including type and id mismatch.",
+            "content": {
+              "application/vnd.api+json": {
+                "example": {
+                  "errors": [
+                    {
+                      "status": "409",
+                      "title": "Conflict"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/api.failure"
+                }
+              }
+            }
+          }
+        },
+        "description": "Create a new object.",
+        "operationId": "POST_objects",
+        "requestBody": {
+          "content": {
+            "application/vnd.api+json": {
+              "schema": {
+                "includePath": "libraries/jsonApiCollections.raml",
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "data": {
+                    "$ref": "#/components/schemas/obj.objects_post"
+                  }
+                },
+                "required": [
+                  "data"
+                ]
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "loc.locations": {
+        "description": "A location response",
+        "example": {
+          "type": "locations",
+          "id": "14",
+          "attributes": {
+            "warehouse": "NYC",
+            "aisle": "3",
+            "shelf": "4",
+            "bin": "22"
+          }
+        },
+        "includePath": "libraries/LocationType.raml",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/loc.locations_post"
+          },
+          {
+            "properties": {
+              "id": {
+                "type": "string"
+              }
+            },
+            "type": "object"
+          }
+        ],
+        "type": "string"
+      },
+      "loc.locations_post": {
+        "description": "a POSTable warehouse location (id is optional, required attributes are indicated)",
+        "example": {
+          "type": "locations",
+          "attributes": {
+            "warehouse": "NYC",
+            "aisle": "3",
+            "shelf": "4",
+            "bin": "22"
+          }
+        },
+        "includePath": "libraries/LocationType.raml",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/loc.locations_patch"
+          },
+          {
+            "properties": {
+              "attributes": {
+                "properties": {
+                  "warehouse": {
+                    "description": "warehouse identifier",
+                    "type": "string"
+                  },
+                  "aisle": {
+                    "description": "aisle in warehouse",
+                    "type": "string"
+                  },
+                  "shelf": {
+                    "description": "shelf in aisle",
+                    "type": "string"
+                  },
+                  "bin": {
+                    "description": "bin on shelf",
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "type": "object"
+          }
+        ],
+        "type": "string"
+      },
+      "loc.locations_patch": {
+        "description": "a PATCHable warehouse location. Only supply attributes or relationships that are changed.",
+        "example": {
+          "type": "locations",
+          "id": "14",
+          "attributes": {
+            "shelf": "4",
+            "bin": "22"
+          }
+        },
+        "includePath": "libraries/LocationType.raml",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/api.resource_post"
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "attributes": {
+                "properties": {
+                  "warehouse": {
+                    "description": "warehouse identifier",
+                    "type": "string"
+                  },
+                  "aisle": {
+                    "description": "aisle in warehouse",
+                    "type": "string"
+                  },
+                  "shelf": {
+                    "description": "shelf in aisle",
+                    "type": "string"
+                  },
+                  "bin": {
+                    "description": "bin on shelf",
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "type": "object"
+          }
+        ],
+        "type": "string"
+      },
+      "obj.objects": {
+        "includePath": "libraries/ObjectType.raml",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/obj.objects_post"
+          },
+          {
+            "properties": {
+              "id": {
+                "type": "string"
+              }
+            },
+            "type": "object"
+          }
+        ],
+        "type": "string"
+      },
+      "obj.objects_post": {
+        "includePath": "libraries/ObjectType.raml",
+        "$ref": "#/components/schemas/obj.objects_patch"
+      },
+      "obj.objects_patch": {
+        "description": "an objectstore entry",
+        "example": {
+          "type": "objects",
+          "id": "14",
+          "attributes": {
+            "warehouse": "NYC",
+            "aisle": "3",
+            "shelf": "4",
+            "bin": "22"
+          }
+        },
+        "includePath": "libraries/ObjectType.raml",
+        "additionalProperties": true,
+        "$ref": "#/components/schemas/api.resource_post"
+      },
+      "wid.widgets": {
+        "description": "a widget response",
+        "example": {
+          "type": "widgets",
+          "id": "abc-123",
+          "attributes": {
+            "name": "can opener",
+            "qty": 42
+          },
+          "relationships": {
+            "locations": {
+              "data": [
+                {
+                  "type": "locations",
+                  "id": "14"
+                },
+                {
+                  "type": "locations",
+                  "id": "15"
+                }
+              ],
+              "links": {
+                "self": "/widgets/abc-123/relationships/location"
+              }
+            }
+          }
+        },
+        "includePath": "libraries/WidgetType.raml",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/wid.widgets_post"
+          },
+          {
+            "properties": {
+              "id": {
+                "type": "string"
+              }
+            },
+            "type": "object"
+          }
+        ],
+        "type": "string"
+      },
+      "wid.widgets_post": {
+        "description": "a POSTable widget's primary (id is optional, required attributes are indicated)",
+        "example": {
+          "type": "widgets",
+          "attributes": {
+            "name": "can opener",
+            "qty": 42
+          },
+          "relationships": {
+            "locations": {
+              "data": [
+                {
+                  "type": "locations",
+                  "id": "14"
+                },
+                {
+                  "type": "locations",
+                  "id": "15"
+                }
+              ],
+              "links": {
+                "self": "/widgets/abc-123/relationships/locations"
+              }
+            }
+          }
+        },
+        "includePath": "libraries/WidgetType.raml",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/wid.widgets_patch"
+          },
+          {
+            "properties": {
+              "attributes": {
+                "properties": {
+                  "name": {
+                    "description": "catalog name",
+                    "type": "string"
+                  },
+                  "qty": {
+                    "minimum": 0,
+                    "description": "quantity",
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "type": "object"
+          }
+        ],
+        "type": "string"
+      },
+      "wid.widgets_patch": {
+        "description": "a PATCHable widget's primary data. Only supply attributes or relationships that are changed.",
+        "example": {
+          "type": "widgets",
+          "id": "abc-123",
+          "attributes": {
+            "qty": 42
+          },
+          "relationships": {
+            "locations": {
+              "data": [
+                {
+                  "type": "locations",
+                  "id": "13"
+                }
+              ]
+            }
+          }
+        },
+        "includePath": "libraries/WidgetType.raml",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/api.resource_post"
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "attributes": {
+                "properties": {
+                  "name": {
+                    "description": "catalog name",
+                    "type": "string"
+                  },
+                  "qty": {
+                    "minimum": 0,
+                    "description": "quantity",
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              },
+              "relationships": {
+                "$ref": "#/components/schemas/api.relationships"
+              }
+            },
+            "type": "object"
+          }
+        ],
+        "type": "string"
+      },
+      "api.success": {
+        "description": "A succesful (2xx) response body.",
+        "includePath": "libraries/jsonApiLibrary.raml",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/api.data"
+          },
+          "included": {
+            "uniqueItems": true,
+            "description": "To reduce the number of HTTP requests, servers **MAY** allow responses that include related resources along with the requested primary resources. Such responses are called \"compound documents\".",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/api.resource"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/api.meta"
+          },
+          "links": {
+            "description": "Link members related to the primary data.",
+            "$ref": "#/components/schemas/api.pagelinks"
+          },
+          "jsonapi": {
+            "$ref": "#/components/schemas/api.jsonapi"
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "api.failure": {
+        "description": "A failure (4xx) response body.",
+        "includePath": "libraries/jsonApiLibrary.raml",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "errors": {
+            "uniqueItems": true,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/api.error"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/api.meta"
+          },
+          "jsonapi": {
+            "$ref": "#/components/schemas/api.jsonapi"
+          },
+          "links": {
+            "$ref": "#/components/schemas/api.links"
+          }
+        },
+        "required": [
+          "errors"
+        ]
+      },
+      "api.info": {
+        "description": "An information-only response body.",
+        "includePath": "libraries/jsonApiLibrary.raml",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "meta": {
+            "$ref": "#/components/schemas/api.meta"
+          },
+          "links": {
+            "$ref": "#/components/schemas/api.links"
+          },
+          "jsonapi": {
+            "$ref": "#/components/schemas/api.jsonapi"
+          }
+        },
+        "required": [
+          "meta"
+        ]
+      },
+      "api.meta": {
+        "description": "Where specified, a meta member can be used to include non-standard meta-information.",
+        "includePath": "libraries/jsonApiLibrary.raml",
+        "type": "object",
+        "additionalProperties": true
+      },
+      "api.data": {
+        "description": "The document's \\\"primary data\\\" is a representation of the resource or collection of resources.",
+        "includePath": "libraries/jsonApiLibrary.raml",
+        "type": "object"
+      },
+      "api.resource": {
+        "description": "A resource must have both a type and id. Additional properties (see resource_post) are optional.",
+        "includePath": "libraries/jsonApiLibrary.raml",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/api.resource_post"
+          },
+          {
+            "properties": {
+              "id": {
+                "type": "string"
+              }
+            },
+            "type": "object"
+          }
+        ],
+        "type": "string"
+      },
+      "api.resource_post": {
+        "description": "A postable resource does not require the `id` property as it is generally assigned by the posting server.",
+        "includePath": "libraries/jsonApiLibrary.raml",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "attributes": {
+            "$ref": "#/components/schemas/api.attributes"
+          },
+          "relationships": {
+            "$ref": "#/components/schemas/api.relationships"
+          },
+          "links": {
+            "$ref": "#/components/schemas/api.links"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/api.meta"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "api.attributes": {
+        "description": "Members of the attributes object (\"attributes\") represent information about the resource object in which it's defined.",
+        "includePath": "libraries/jsonApiLibrary.raml",
+        "type": "object",
+        "additionalProperties": true
+      },
+      "api.relationshipLinks": {
+        "includePath": "libraries/jsonApiLibrary.raml",
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "self": {
+            "description": "A `self` member, whose value is a URL for the relationship itself (a \"relationship URL\"). This URL allows the client to directly manipulate the relationship. For example, it would allow a client to remove an `author` from an `article` without deleting the people resource itself.",
+            "$ref": "#/components/schemas/api.link"
+          },
+          "related": {
+            "$ref": "#/components/schemas/api.link"
+          }
+        }
+      },
+      "api.links": {
+        "includePath": "libraries/jsonApiLibrary.raml",
+        "type": "object",
+        "additionalProperties": true
+      },
+      "api.pagelinks": {
+        "includePath": "libraries/jsonApiLibrary.raml",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/api.pagination"
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "self": {
+                "$ref": "#/components/schemas/api.link"
+              }
+            },
+            "type": "object"
+          }
+        ],
+        "type": "string"
+      },
+      "api.link": {
+        "includePath": "libraries/jsonApiLibrary.raml",
+        "type": "object"
+      },
+      "api.linkobject": {
+        "includePath": "libraries/jsonApiLibrary.raml",
+        "type": "object",
+        "properties": {
+          "href": {
+            "description": "A string containing the link's URL.",
+            "$ref": "#/components/schemas/api.uristring"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/api.meta"
+          }
+        },
+        "required": [
+          "href",
+          "meta"
+        ]
+      },
+      "api.relationshipMember": {
+        "description": "Members of the relationships object (\"relationships\") represent references from the resource object in which it's defined to other resource objects. ANY of data,links,meta.",
+        "includePath": "libraries/jsonApiLibrary.raml",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "type": "object"
+          },
+          "links": {
+            "$ref": "#/components/schemas/api.relationshipLinks"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/api.meta"
+          }
+        }
+      },
+      "api.relationships": {
+        "includePath": "libraries/jsonApiLibrary.raml",
+        "type": "object",
+        "additionalProperties": true
+      },
+      "api.relationshipToOne": {
+        "description": "References to other resource objects in a to-one (\\\"relationship\\\"). Relationships can be specified by including a member in a resource's links object.",
+        "includePath": "libraries/jsonApiLibrary.raml",
+        "type": "object"
+      },
+      "api.relationshipToMany": {
+        "uniqueItems": true,
+        "description": "An array of objects each containing \\\"type\\\" and \\\"id\\\" members for to-many relationships.",
+        "includePath": "libraries/jsonApiLibrary.raml",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/api.linkage"
+        }
+      },
+      "api.empty": {
+        "type": "nil",
+        "includePath": "libraries/jsonApiLibrary.raml"
+      },
+      "api.linkage": {
+        "includePath": "libraries/jsonApiLibrary.raml",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/api.resource"
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "id": {
+                "type": "string"
+              },
+              "meta": {
+                "$ref": "#/components/schemas/api.meta"
+              }
+            },
+            "type": "object"
+          }
+        ],
+        "type": "string"
+      },
+      "api.pagination": {
+        "includePath": "libraries/jsonApiLibrary.raml",
+        "type": "object",
+        "properties": {
+          "first": {
+            "description": "The first page of data",
+            "type": "object"
+          },
+          "last": {
+            "description": "The last page of data",
+            "type": "object"
+          },
+          "prev": {
+            "description": "The previous page of data",
+            "type": "object"
+          },
+          "next": {
+            "description": "The next page of data",
+            "type": "object"
+          }
+        }
+      },
+      "api.uristring": {
+        "includePath": "libraries/jsonApiLibrary.raml",
+        "type": "string"
+      },
+      "api.jsonapi": {
+        "includePath": "libraries/jsonApiLibrary.raml",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "version": {
+            "type": "string"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/api.meta"
+          }
+        }
+      },
+      "api.error": {
+        "includePath": "libraries/jsonApiLibrary.raml",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "description": "A unique identifier for this particular occurrence of the problem.",
+            "type": "string"
+          },
+          "links": {
+            "$ref": "#/components/schemas/api.links"
+          },
+          "status": {
+            "description": "The HTTP status code applicable to this problem, expressed as a string value.",
+            "type": "string"
+          },
+          "code": {
+            "description": "An application-specific error code, expressed as a string value.",
+            "type": "string"
+          },
+          "title": {
+            "description": "A short, human-readable summary of the problem. It **SHOULD NOT** change from occurrence to occurrence of the problem, except for purposes of localization.",
+            "type": "string"
+          },
+          "detail": {
+            "description": "A human-readable explanation specific to this occurrence of the problem.",
+            "type": "string"
+          },
+          "source": {
+            "type": "object",
+            "properties": {
+              "pointer": {
+                "description": "A JSON Pointer [RFC6901] to the associated entity in the request document [e.g. \"/data\" for a primary data object, or \"/data/attributes/title\" for a specific attribute].",
+                "type": "string"
+              },
+              "parameter": {
+                "description": "A string indicating which query parameter caused the error.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "pointer",
+              "parameter"
+            ]
+          },
+          "meta": {
+            "$ref": "#/components/schemas/api.meta"
+          }
+        }
+      },
+      "cu.oa2.OAuth2success": {
+        "description": "[RFC 6749 success response](https://tools.ietf.org/html/rfc6749#section-5.1)\n",
+        "includePath": "libraries/oAuth2Types.raml",
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "access_token": {
+            "description": "REQUIRED.  The access token issued by the authorization server.\n",
+            "type": "string"
+          },
+          "token_type": {
+            "description": "REQUIRED.  The type of the token issued:\n",
+            "enum": [
+              "bearer"
+            ],
+            "type": "string"
+          },
+          "expires_in": {
+            "description": "RECOMMENDED.  The lifetime in seconds of the access token.\n",
+            "type": "integer"
+          },
+          "refresh_token": {
+            "description": "OPTIONAL.  The refresh token, which can be used to obtain new\naccess tokens using the same authorization grant.\n",
+            "type": "string"
+          },
+          "scope": {
+            "description": "OPTIONAL, if identical to the scope requested by the client;\notherwise, REQUIRED.\n",
+            "type": "string"
+          }
+        },
+        "required": [
+          "access_token",
+          "token_type"
+        ]
+      },
+      "cu.oa2.OAuth2error": {
+        "description": "[RFC 6749 Error response](https://tools.ietf.org/html/rfc6749#section-5.2)\n",
+        "includePath": "libraries/oAuth2Types.raml",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "error": {
+            "description": "REQUIRED.  A single ASCII [USASCII] error code from the following:\n",
+            "enum": [
+              "invalid_request",
+              "invalid_client",
+              "invalid_grant",
+              "unauthorized_client",
+              "unsupported_grant_type"
+            ],
+            "type": "string"
+          },
+          "error_description": {
+            "description": "OPTIONAL.  Human-readable ASCII [USASCII] text providing\nadditional information, used to assist the client developer in\nunderstanding the error that occurred.\n",
+            "type": "string"
+          },
+          "error_uri": {
+            "description": "OPTIONAL.  A URI identifying a human-readable web page with\ninformation about the error, used to provide the client\ndeveloper with additional information about the error.\n",
+            "type": "string"
+          }
+        },
+        "required": [
+          "error"
+        ]
+      }
+    },
+    "responses": {
+      "trait_cu.protected_401": {
+        "description": "Unauthorized",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/cu.oa2.OAuth2error"
+            }
+          }
+        }
+      },
+      "trait_cu.protected_403": {
+        "description": "Forbidden",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/cu.oa2.OAuth2error"
+            }
+          }
+        }
+      },
+      "trait_cu.protected_429": {
+        "description": "rate-limiting policy SLA has been exceeded.",
+        "content": {
+          "application/text": {
+            "schema": {
+              "example": "API calls exceeded",
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "parameters": {
+      "trait_col.pageable_page[number]": {
+        "name": "page[number]",
+        "in": "query",
+        "description": "Starts at page number",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "trait_col.pageable_page[size]": {
+        "name": "page[size]",
+        "in": "query",
+        "description": "Page size. Number of items per page.",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "trait_col.pageable_page[offset]": {
+        "name": "page[offset]",
+        "in": "query",
+        "description": "Page offset. Starting item number.",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "trait_col.pageable_page[limit]": {
+        "name": "page[limit]",
+        "in": "query",
+        "description": "Page limit. Limit on number of items or pages returned.",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "trait_col.pageable_page[cursor]": {
+        "name": "page[cursor]",
+        "in": "query",
+        "description": "Page cursor.",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "trait_col.sortable_sort": {
+        "name": "sort",
+        "in": "query",
+        "description": "list of type.attributes to sort by. Use a `-` sign to indicate a descending sort.\n",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "trait_col.sparse_fields[{type}]": {
+        "name": "fields[{type}]",
+        "in": "query",
+        "description": "Return only the listed attributes for the given type.\n",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "trait_col.filterable_filter[{attr}]": {
+        "name": "filter[{attr}]",
+        "in": "query",
+        "description": "list of type.attributes and values to filter by. \nUse a comma-separated list for OR.\nUse multiple filter[{attr}] queryParameters for AND.\n",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "trait_col.includable_include": {
+        "name": "include",
+        "in": "query",
+        "description": "The value of the include parameter MUST be a comma-separated list of relationship paths. A relationship path is a dot-separated list of relationship names.\n",
+        "schema": {
+          "type": "string"
+        }
+      }
+    },
+    "examples": {},
+    "requestBodies": {},
+    "headers": {},
+    "securitySchemes": {
+      "cu.oauth_2_0": {
+        "description": "This API supports OAuth 2.0 for authenticating all API requests.\n",
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "https://oauth.cc.columbia.edu/as/token.oauth2",
+            "scopes": {
+              "openid": "",
+              "auth-columbia": "",
+              "auth-facebook": "",
+              "auth-google": "",
+              "auth-linkedin": "",
+              "auth-twitter": "",
+              "auth-windowslive": "",
+              "auth-none": "",
+              "create": "",
+              "read": "",
+              "update": "",
+              "delete": "",
+              "demo-netphone-admin": ""
+            }
+          }
+        }
+      }
+    },
+    "links": {},
+    "callbacks": {}
+  }
+}
