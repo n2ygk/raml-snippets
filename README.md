@@ -19,6 +19,14 @@ Some useful RAML 1.0 snippets.
 
 ## Introduction
 
+**N.B. RAML deprecated in lieu of OAS**
+
+With the introduction of [Openapi 3.0](http://spec.openapis.org/oas/v3.0.2), we've switched from RAML 1.0 to
+OAS 3.0 for our API specification language.
+
+Please see https://columbia-it-django-jsonapi-training.readthedocs.io/en/latest/documenting-api.html for a
+more up-to-date project that documents JSON API 1.0 using OAS 3.0.
+
 Find here some useful RAML 1.0 snippets (mostly as RAML 1.0 Libraries) that can be
 included in your root RAML API document.
 
